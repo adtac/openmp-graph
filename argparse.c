@@ -42,8 +42,8 @@ int int_arg(int argc, char *argv[], int i)
 void print_help()
 {
     printf("-h\tdisplay this help message\n");
-    printf("-N\tnumber of vertices (default: 1000)\n");
-    printf("-E\tnumber of edges (default: 100000)\n");
+    printf("-N\tnumber of vertices (default: 16)\n");
+    printf("-E\tnumber of edges (default: 80)\n");
 
     exit(0);
 }
@@ -58,8 +58,8 @@ void argparse(int argc, char *argv[],
               int *num_edges)
 {
     /* Default values */
-    *num_vertices = 1000;
-    *num_edges    = 100000;
+    *num_vertices = 16;
+    *num_edges    = 80;
 
     int i;
     for(i = 1; i < argc; i++) {
