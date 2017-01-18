@@ -3,6 +3,7 @@
 
 void argparse(int argc, char *argv[],
               int *num_vertices,
-              int *num_edges);
+              int *num_edges,
+              FILE **debug_file);
 
 #endif
