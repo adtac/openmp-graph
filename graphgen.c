@@ -52,9 +52,7 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
             }
 
             *(u->neighbors + u->degree) = vn;
-            *(v->neighbors + v->degree) = un;
             u->degree++;
-            v->degree++;
 
             edges_left--;
         }
