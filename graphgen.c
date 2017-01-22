@@ -24,7 +24,7 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
 
     log_debug("allcating adjacency matrix\n")
     g->amat = (char **)malloc(sizeof(char *) * num_vertices);
-    for(i = 0; i < num_edges; i++) {
+    for(i = 0; i < num_vertices; i++) {
         g->amat[i] = (char *)malloc(sizeof(char) * num_vertices);
         memset(g->amat[i], 0, sizeof(char) * num_vertices);
     }
