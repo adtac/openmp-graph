@@ -8,4 +8,6 @@
     fprintf(debug_file, __VA_ARGS__);\
 }
 
+int next_power_of_2(int x);
+
 #endif

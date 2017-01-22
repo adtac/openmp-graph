@@ -14,6 +14,18 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
     g->num_vertices = num_vertices;
     g->num_edges = num_edges;
 
+    int pow_of_2;
+    if((num_vertices & (num_vertices - 1)) == 0)
+        pow_of_2 = num_vertices;
+    else
+        pow_of_2 = next_power_of_2(num_vertices);
+    g->label = 0;
+    while(pow_of_2) {
+        g->label++;
+        pow_of_2 >>= 1;
+    }
+    g->label--;
+
     log_debug("allocating vertices\n");
     g->vertices = (node *)malloc(sizeof(node) * (num_vertices+1));
     for(i = 0; i <= num_vertices; i++) {

@@ -11,6 +11,7 @@ typedef struct {
     node *vertices;
     char **amat;  /* adjacency matrix */
     int num_vertices, num_edges;
+    int label;
 } graph;
 
 #endif
