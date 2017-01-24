@@ -44,7 +44,10 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
     log_debug("generating edge list\n");
     int edges_left = num_edges;
     while(edges_left) {
-        int un = rand()%num_vertices, vn = rand()%num_vertices;
+        int _un = rand()%num_vertices, _vn = rand()%num_vertices;
+        int un = _un < _vn ? _un : _vn;
+        int vn = _un < _vn ? _vn : _un;
+
         if(un == vn)
             continue;
 
@@ -71,4 +74,28 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
     }
 
     return g;
+}
+
+void print_graph(graph *g) {
+    int i, j;
+
+    printf("Generated graph: %dx%d with %d edges\n",
+           g->num_vertices, g->num_vertices, g->num_edges);
+
+    printf("    |");
+    for(int i = 0; i < g->num_vertices; i++)
+        printf(" %2d |", i);
+    printf("\n");
+
+    printf("----+");
+    for(int i = 0; i < g->num_vertices; i++)
+        printf("----+", i);
+    printf("\n");
+
+    for(i = 0; i < g->num_vertices; i++) {
+        printf(" %2d |", i);
+        for(j = 0; j < g->num_vertices; j++)
+            printf(" %s |", g->amat[i][j] ? "**" : "  ");
+        printf("\n");
+    }
 }

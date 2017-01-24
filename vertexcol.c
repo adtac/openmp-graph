@@ -12,7 +12,11 @@ int main(int argc, char *argv[]) {
     argparse(argc, argv,
              &num_vertices,
              &num_edges,
-             &debug_file);
+             &debug_file,
+             &print_amat);
 
     graph *g = generate_graph(num_vertices, num_edges, debug_file);
+
+    if(print_amat)
+        print_graph(g);
 }

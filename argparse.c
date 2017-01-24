@@ -67,6 +67,7 @@ void print_help()
 {
     printf("-h          display this help message\n");
     printf("-d <arg>    debug file (off by default, use /dev/stdout for stdout)\n");
+    printf("-g          print the adjacency matrix (warning: this may produce large output)\n");
     printf("-N <arg>    number of vertices (default: 16)\n");
     printf("-E <arg>    number of edges (default: 80)\n");
 
@@ -75,18 +76,22 @@ void print_help()
 
 /**
  * argparse - parses command line arguments
- * @argc: number of arguments
- * @argv: argument list
+ * @argc:       number of arguments
+ * @argv:       argument list
+ * @debug_file: debug file
+ * @print_amat: whether or not to print the adjacency matrix
  */
 void argparse(int argc, char *argv[],
               int *num_vertices,
               int *num_edges,
-              FILE **debug_file)
+              FILE **debug_file,
+              int *print_amat)
 {
     /* Default values */
     *num_vertices = 16;
     *num_edges    = 80;
     *debug_file   = fopen("/dev/null", "w");
+    *print_amat   = 0;
 
     int i;
     for(i = 1; i < argc; i++) {
@@ -101,5 +106,8 @@ void argparse(int argc, char *argv[],
 
         if(strcmp(argv[i], "-d") == 0)
             *debug_file = file_arg(argc, argv, i);
+
+        if(strcmp(argv[i], "-g") == 0)
+            *print_amat = 1;
     }
 }
