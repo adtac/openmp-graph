@@ -7,6 +7,8 @@ typedef struct {
 
     int color, received_color;
     int again;
+
+    int parent;
 } node;
 
 typedef struct {

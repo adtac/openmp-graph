@@ -1,5 +1,6 @@
 #include <omp.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "utils.h"
 #include "argparse.h"
@@ -98,12 +99,96 @@ void six_colors(graph *g) {
     }
 }
 
+void shift_down(graph *g)
+{
+    int i;
+
+#pragma omp parallel for schedule(dynamic) shared(g)
+    for(i = 0; i < g->num_vertices; i++) {
+        int j;
+        node *u = g->vertices + i;
+
+        for(j = 0; j < u->degree; j++) {
+            // printf("%d recv %d from %d\n", u->neighbors[j], u->color, i);
+            node *v = g->vertices + u->neighbors[j];
+            v->received_color = u->color;
+        }
+    }
+
+#pragma omp parallel for schedule(dynamic) shared(g)
+    for(i = 0; i < g->num_vertices; i++) {
+        if(i != ROOT) {
+            node *u = g->vertices + i;
+            u->color = u->received_color;
+        }
+    }
+}
+
+/**
+ * six_to_three - bring it down from six colors to three colors
+ * @g: the graph
+ */
+void six_to_three(graph *g)
+{
+    int x;
+    for(x = 5; x >= 3; x--) {
+        shift_down(g);
+
+        int new = rand() % 3;
+        node *u = g->vertices + ROOT;
+        if(new == u->color)
+            new = (new+1) % 3;
+        u->color = new;
+
+        int i;
+#pragma omp parallel for schedule(dynamic)
+        for(i = 0; i < g->num_vertices; i++) {
+            int parent_col = 0, child_col = 0;
+
+            node *u = g->vertices + i;
+
+            if(u->color == x) {
+                node *p = g->vertices + u->parent;
+                parent_col = p->color;
+
+                if(u->degree > 0) {
+                    node *c = g->vertices + u->neighbors[0];
+                    child_col = c->color;
+                }
+
+                switch(parent_col + child_col) {
+                    case 1:
+                        u->color = 2;
+                        break;
+
+                    case 2:
+                        u->color = 1;
+                        break;
+
+                    case 3:
+                    case 4:
+                    case 5:
+                        if(parent_col != 0 && child_col != 0)
+                            u->color = 0;
+                        else
+                            u->color = 1;
+                        break;
+
+                    default:
+                        u->color = 0;
+                }
+            }
+        }
+    }
+}
+
 /**
  * run - runner function
  *
  * @g: the graph
  */
-void run(graph *g) {
+void run(graph *g)
+{
     g->vertices[ROOT].color = 0;
 
     log_debug("coloring graph with six colors\n");
@@ -111,9 +196,10 @@ void run(graph *g) {
         six_colors(g);
     } while(again(g));
 
+    six_to_three(g);
+
     for(int i = 0; i < g->num_vertices; i++)
         printf("[%d] %d\n", i, g->vertices[i].color);
-    printf("\n");
 }
 
 int main(int argc, char *argv[]) {

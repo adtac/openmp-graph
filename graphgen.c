@@ -20,8 +20,6 @@ void generate_label(graph *g)
         pow_of_2 >>= 1;
     }
     g->label--;
-
-    printf("label is %d\n", g->label);
 }
 
 graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
@@ -42,6 +40,7 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
         g->vertices[i].neighbors = (int *)malloc(sizeof(int) * 8);
         g->vertices[i].alloc = 8;
         g->vertices[i].degree = 0;
+        g->vertices[i].parent = i;
     }
 
     log_debug("allcating adjacency matrix\n")
@@ -63,7 +62,6 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
 
         if(!g->amat[un][vn]) {
             add_edge(g, un, vn);
-            // add_edge(g, vn, un);
 
             edges_left--;
         }
@@ -110,6 +108,9 @@ graph *read_graph_file(FILE *graph_file, FILE *debug_file)
         fgetc(graph_file); /* skip the newline */
     }
     g->num_edges /= 2; /* because we double conted */
+
+    for(i = 0; i < g->num_vertices; i++)
+        fscanf(graph_file, "%d", &(g->vertices[i].parent));
 
     return g;
 }
