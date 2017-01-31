@@ -227,7 +227,7 @@ void verify_solution(graph *g)
         node *u = g->vertices + i;
         for(int j = 0; j < u->degree; j++) {
             node *v = g->vertices + u->neighbors[j];
-            if(g->amat[i][j] && u->color == v->color)
+            if((g->amat[i][j] || g->amat[j][i]) && u->color == v->color)
                 g->correct = 0;
         }
     }
