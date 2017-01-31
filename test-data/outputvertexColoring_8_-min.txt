@@ -1,0 +1,9 @@
+Solution verified to be correct.
+Node   0: color 0
+Node   1: color 2
+Node   2: color 1
+Node   3: color 0
+Node   4: color 1
+Node   5: color 0
+Node   6: color 1
+Node   7: color 0
