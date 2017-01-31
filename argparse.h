@@ -5,6 +5,7 @@ void argparse(int argc, char *argv[],
               int *num_vertices,
               int *num_edges,
               FILE **debug_file,
-              int *print_amat);
+              int *print_amat,
+              FILE **graph_file);
 
 #endif

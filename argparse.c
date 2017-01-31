@@ -41,17 +41,24 @@ int int_arg(int argc, char *argv[], int i)
  * @argc: number of arguments
  * @argv: argument list
  * @i:    index of the argument name
+ * @read: read-only or not
  *
  * Returns the integer if valid. Exits if any errors are encountered.
  */
-FILE *file_arg(int argc, char *argv[], int i)
+FILE *file_arg(int argc, char *argv[], int i, int read)
 {
     if(i + 1 >= argc || argv[i+1] == NULL) {
         fprintf(stderr, "error: no value provided for `%s'\n", argv[i]);
         exit(1);
     }
 
-    FILE *ret = fopen(argv[i+1], "w");
+    FILE *ret;
+    
+    if(read)
+        ret = fopen(argv[i+1], "r");
+    else
+        ret = fopen(argv[i+1], "w");
+
     if(ret == NULL) {
         fprintf(stderr, "error: can't open file given for `%s'", argv[i]);
         exit(1);
@@ -67,6 +74,7 @@ void print_help()
 {
     printf("-h          display this help message\n");
     printf("-d <arg>    debug file (off by default, use /dev/stdout for stdout)\n");
+    printf("-f <arg>    input graph file (if not given, a graph will be generated)\n");
     printf("-g          print the adjacency matrix (warning: this may produce large output)\n");
     printf("-N <arg>    number of vertices (default: 16)\n");
     printf("-E <arg>    number of edges (default: 80)\n");
@@ -85,13 +93,15 @@ void argparse(int argc, char *argv[],
               int *num_vertices,
               int *num_edges,
               FILE **debug_file,
-              int *print_amat)
+              int *print_amat,
+              FILE **graph_file)
 {
     /* Default values */
     *num_vertices = 16;
     *num_edges    = 80;
     *debug_file   = fopen("/dev/null", "w");
     *print_amat   = 0;
+    *graph_file   = NULL;
 
     int i;
     for(i = 1; i < argc; i++) {
@@ -105,9 +115,13 @@ void argparse(int argc, char *argv[],
             *num_edges = int_arg(argc, argv, i);
 
         if(strcmp(argv[i], "-d") == 0)
-            *debug_file = file_arg(argc, argv, i);
+            *debug_file = file_arg(argc, argv, i, 0);
 
         if(strcmp(argv[i], "-g") == 0)
             *print_amat = 1;
+
+        if(strcmp(argv[i], "-f") == 0) {
+            *graph_file = file_arg(argc, argv, i, 1);
+        }
     }
 }

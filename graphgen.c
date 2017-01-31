@@ -6,6 +6,24 @@
 #include "graph.h"
 #include "graphgen.h"
 
+void generate_label(graph *g)
+{
+    int pow_of_2;
+    if((g->num_vertices & (g->num_vertices - 1)) == 0)
+        pow_of_2 = g->num_vertices;
+    else
+        pow_of_2 = next_power_of_2(g->num_vertices);
+
+    g->label = 0;
+    while(pow_of_2) {
+        g->label++;
+        pow_of_2 >>= 1;
+    }
+    g->label--;
+
+    printf("label is %d\n", g->label);
+}
+
 graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
 {
     int i;
@@ -14,19 +32,11 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
     g->num_vertices = num_vertices;
     g->num_edges = num_edges;
 
-    int pow_of_2;
-    if((num_vertices & (num_vertices - 1)) == 0)
-        pow_of_2 = num_vertices;
-    else
-        pow_of_2 = next_power_of_2(num_vertices);
-    g->label = 0;
-    while(pow_of_2) {
-        g->label++;
-        pow_of_2 >>= 1;
-    }
-    g->label--;
+    g->root = 0;
 
-    log_debug("allocating vertices\n");
+    generate_label(g);
+
+    log_debug("allocating %d vertices\n", g->num_vertices);
     g->vertices = (node *)malloc(sizeof(node) * (num_vertices+1));
     for(i = 0; i <= num_vertices; i++) {
         g->vertices[i].neighbors = (int *)malloc(sizeof(int) * 8);
@@ -52,22 +62,8 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
             continue;
 
         if(!g->amat[un][vn]) {
-            g->amat[un][vn] = 1;
-            g->amat[vn][un] = 1;
-
-            node *u = g->vertices + un, *v = g->vertices + vn;
-
-            while(u->degree >= u->alloc) {
-                u->alloc *= 2;
-                u->neighbors = (int *)realloc(u->neighbors, sizeof(int) * u->alloc);
-            }
-            while(v->degree >= v->alloc) {
-                v->alloc *= 2;
-                v->neighbors = (int *)realloc(v->neighbors, sizeof(int) * v->alloc);
-            }
-
-            *(u->neighbors + u->degree) = vn;
-            u->degree++;
+            add_edge(g, un, vn);
+            // add_edge(g, vn, un);
 
             edges_left--;
         }
@@ -76,7 +72,50 @@ graph *generate_graph(int num_vertices, int num_edges, FILE *debug_file)
     return g;
 }
 
-void print_graph(graph *g) {
+graph *read_graph_file(FILE *graph_file, FILE *debug_file)
+{
+    int i, j;
+    graph *g = (graph *)malloc(sizeof(graph));
+
+    log_debug("reading graph file\n");
+    fscanf(graph_file, "%d\n", &g->num_vertices);
+
+    fscanf(graph_file, "%d\n", &g->root);
+
+    generate_label(g);
+
+    log_debug("allocating %d vertices\n", g->num_vertices);
+    g->vertices = (node *)malloc(sizeof(node) * (g->num_vertices+1));
+    for(i = 0; i <= g->num_vertices; i++) {
+        g->vertices[i].neighbors = (int *)malloc(sizeof(int) * 8);
+        g->vertices[i].alloc = 8;
+        g->vertices[i].degree = 0;
+    }
+
+    log_debug("allcating adjacency matrix\n")
+    g->amat = (char **)malloc(sizeof(char *) * g->num_vertices);
+    for(i = 0; i < g->num_vertices; i++) {
+        g->amat[i] = (char *)malloc(sizeof(char) * g->num_vertices);
+        memset(g->amat[i], 0, sizeof(char) * g->num_vertices);
+    }
+
+    g->num_edges = 0;
+    for(i = 0; i < g->num_vertices; i++) {
+        for(j = 0; j < g->num_vertices; j++) {
+            if(fgetc(graph_file) == '1' && i <= j) {
+                add_edge(g, i, j);
+                g->num_edges++;
+            }
+        }
+        fgetc(graph_file); /* skip the newline */
+    }
+    g->num_edges /= 2; /* because we double conted */
+
+    return g;
+}
+
+void print_graph(graph *g)
+{
     int i, j;
 
     printf("Generated graph: %dx%d with %d edges\n",

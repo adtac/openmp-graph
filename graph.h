@@ -14,6 +14,9 @@ typedef struct {
     char **amat;  /* adjacency matrix */
     int num_vertices, num_edges;
     int label;
+    int root;
 } graph;
+
+void add_edge(graph *g, int un, int vn);
 
 #endif
