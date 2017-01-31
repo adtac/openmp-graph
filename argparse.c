@@ -76,6 +76,7 @@ void print_help()
     printf("-d <arg>    debug file (off by default, use /dev/stdout for stdout)\n");
     printf("-f <arg>    input graph file (if not given, a graph will be generated)\n");
     printf("-g          print the adjacency matrix (warning: this may produce large output)\n");
+    printf("-o <arg>    output file (default: stdout)\n");
     printf("-N <arg>    number of vertices (default: 16)\n");
     printf("-E <arg>    number of edges (default: 80)\n");
 
@@ -94,7 +95,8 @@ void argparse(int argc, char *argv[],
               int *num_edges,
               FILE **debug_file,
               int *print_amat,
-              FILE **graph_file)
+              FILE **graph_file,
+              FILE **output_file)
 {
     /* Default values */
     *num_vertices = 16;
@@ -102,6 +104,7 @@ void argparse(int argc, char *argv[],
     *debug_file   = fopen("/dev/null", "w");
     *print_amat   = 0;
     *graph_file   = NULL;
+    *output_file  = fopen("/dev/stdout", "w");
 
     int i;
     for(i = 1; i < argc; i++) {
@@ -120,8 +123,10 @@ void argparse(int argc, char *argv[],
         if(strcmp(argv[i], "-g") == 0)
             *print_amat = 1;
 
-        if(strcmp(argv[i], "-f") == 0) {
+        if(strcmp(argv[i], "-f") == 0)
             *graph_file = file_arg(argc, argv, i, 1);
-        }
+
+        if(strcmp(argv[i], "-o") == 0)
+            *output_file = file_arg(argc, argv, i, 0);
     }
 }

@@ -13,6 +13,7 @@ int num_vertices, num_edges;
 FILE *debug_file;
 int print_amat;
 FILE *graph_file;
+FILE *output_file;
 
 /**
  * initialize - sets the initial values for various vertex parameters
@@ -197,9 +198,39 @@ void run(graph *g)
     } while(again(g));
 
     six_to_three(g);
+}
 
-    for(int i = 0; i < g->num_vertices; i++)
-        printf("[%d] %d\n", i, g->vertices[i].color);
+/**
+ * write_to_file - write the output to a file
+ * @g:           the graph
+ * @output_file: output file
+ */
+void write_to_file(graph *g, FILE *output_file)
+{
+    fprintf(output_file, "Solution verified to be correct.\n");
+    for(int i = 0; i < g->num_vertices; i++) {
+        node *u = g->vertices + i;
+        fprintf(output_file, "Node %3d: color %d\n", i, u->color);
+    }
+}
+
+/**
+ * verify_solution - verifies if the solution is correct
+ * @g: the graph
+ */
+void verify_solution(graph *g)
+{
+    g->correct = 1;
+    int i, j;
+
+    for(int i = 0; i < g->num_vertices; i++) {
+        node *u = g->vertices + i;
+        for(int j = 0; j < u->degree; j++) {
+            node *v = g->vertices + u->neighbors[j];
+            if(g->amat[i][j] && u->color == v->color)
+                g->correct = 0;
+        }
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -208,7 +239,8 @@ int main(int argc, char *argv[]) {
              &num_edges,
              &debug_file,
              &print_amat,
-             &graph_file);
+             &graph_file,
+             &output_file);
 
     graph *g;
     if(graph_file) /* read the graph file */
@@ -223,4 +255,8 @@ int main(int argc, char *argv[]) {
     initialize(g);
 
     run(g);
+
+    verify_solution(g);
+
+    write_to_file(g, output_file);
 }

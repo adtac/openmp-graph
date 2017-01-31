@@ -17,6 +17,7 @@ typedef struct {
     int num_vertices, num_edges;
     int label;
     int root;
+    int correct;
 } graph;
 
 void add_edge(graph *g, int un, int vn);
