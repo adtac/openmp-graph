@@ -2,9 +2,11 @@
 #define _GRAPH_H
 
 typedef struct {
-    int color;
     int *neighbors;
     int alloc, degree;
+
+    int color, received_color;
+    int again;
 } node;
 
 typedef struct {
