@@ -13,7 +13,7 @@ for root, dirs, files in os.walk("test-data/"):
             in_path = os.path.join(os.path.abspath(root), file)
             out_path = os.path.join(os.path.abspath(root), "output" + file[5:])
 
-            cmd = "./mis -f " + in_path + " -o " + out_path
+            cmd = "./vertexcol -f " + in_path + " -o " + out_path
             print(file[5:])
 
             os.system(cmd)
