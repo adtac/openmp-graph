@@ -149,11 +149,11 @@ public class leader_elect_lcr
 		finish {
   			for(int i=0; i<processes; i++) {
 	  			async {
-					if(processSet[i].recievedId > processSet[i].leaderId) {
-						processSet[i].send = processSet[i].recievedId;
-						processSet[i].leaderId = processSet[i].recievedId;
+					if(processSet[i].receivedId > processSet[i].leaderId) {
+						processSet[i].send = processSet[i].receivedId;
+						processSet[i].leaderId = processSet[i].receivedId;
 					}
-					else if(processSet[i].recievedId == processSet[i].id) {
+					else if(processSet[i].receivedId == processSet[i].id) {
 						processSet[i].status = true;
 						processSet[i].leaderId = processSet[i].id;
 					}
@@ -197,7 +197,7 @@ public class leader_elect_lcr
 	 * @param	sval		Message value.
 	 */
   	void sendMessage(int receiver, int sval) {
-		processSet[receiver].recievedId = sval;
+		processSet[receiver].receivedId = sval;
   	}
   
   	/** 
@@ -240,7 +240,7 @@ class Process
   	int leaderId;
   	
 	/** Represents the Identifier that the process receives from its neighbor. */
-  	int recievedId;				
+  	int receivedId;				
   
   	/** Represents the status of the process and will be set to true for leader. */
   	boolean status;
