@@ -80,6 +80,10 @@ void print_help()
     printf("-N <arg>    number of vertices (default: 16)\n");
     printf("-E <arg>    number of edges (default: 80)\n");
 
+    printf("\n");
+
+    printf("Make sure your input is a tree (has no cycles).\n");
+
     exit(0);
 }
 
