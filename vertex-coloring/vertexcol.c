@@ -65,7 +65,7 @@ void six_colors(graph *g) {
         node *u = g->vertices + i;
 
         for(j = 0; j < u->degree; j++) {
-            printf("%d recv %d from %d\n", u->neighbors[j], u->color, i);
+            // printf("%d recv %d from %d\n", u->neighbors[j], u->color, i);
             node *v = g->vertices + u->neighbors[j];
             v->received_color = u->color;
         }
@@ -82,15 +82,15 @@ void six_colors(graph *g) {
         u->again = 0;
 
         int xor = u->received_color ^ u->color;
-        printf("%d: recvd %d, orig %d\n", i, u->received_color, u->color);
+        // printf("%d: recvd %d, orig %d\n", i, u->received_color, u->color);
         for(k = 0; k <= g->label; k++) {
             int mask = 1 << k;
-            printf("%d: k = %d, mask = %d, xor = %d\n", i, k, mask, xor);
+            // printf("%d: k = %d, mask = %d, xor = %d\n", i, k, mask, xor);
 
             if(xor & mask) { /* they have this bit different */
-                printf("%d: recv = %d\n", i, u->received_color);
+                // printf("%d: recv = %d\n", i, u->received_color);
                 u->color = (k << 1) + (u->color & mask ? 1 : 0);
-                printf("%d: col = %d\n", i, u->color);
+                // printf("%d: col = %d\n", i, u->color);
                 break;
             }
         }
@@ -110,7 +110,7 @@ void shift_down(graph *g)
         node *u = g->vertices + i;
 
         for(j = 0; j < u->degree; j++) {
-            printf("%d recv %d from %d\n", u->neighbors[j], u->color, i);
+            // printf("%d recv %d from %d\n", u->neighbors[j], u->color, i);
             node *v = g->vertices + u->neighbors[j];
             v->received_color = u->color;
         }
