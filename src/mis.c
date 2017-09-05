@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
 
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
