@@ -32,8 +32,7 @@ graph* generate_new_graph(int N, int M) {
         if (g->adj_mat[u][v] != 0)
             continue;
 
-        g->adj_mat[u][v] = 1 + rand()%100;
-        g->adj_mat[v][u] = 1 + rand()%100;
+        g->adj_mat[u][v] = g->adj_mat[v][u] = 1 + rand()%100;
 
         add_edge(g, u, v);
 
