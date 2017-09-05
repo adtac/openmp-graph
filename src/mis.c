@@ -15,6 +15,13 @@ double randnum() {
     return ((double) rand()) / ((double) RAND_MAX);
 }
 
+/**
+ * Creates a MIS from a randomly generated graph in a distributed manner.
+ *
+ * Links:
+ *   - https://disco.ethz.ch/courses/podc_allstars/lecture/chapter7.pdf
+ *     See Algorithm 7.12 (Fast MIS-2)
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     int M = 64;
