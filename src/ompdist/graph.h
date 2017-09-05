@@ -30,6 +30,8 @@ typedef struct {
 
 graph* new_graph();
 
+void print_graph(graph*);
+
 void add_edge(graph*, int, int);
 
 void free_graph(graph*);

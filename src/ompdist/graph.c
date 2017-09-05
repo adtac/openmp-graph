@@ -38,6 +38,29 @@ graph* new_graph(int N, int M) {
     return g;
 }
 
+void print_graph(graph*g) {
+    printf("    ");
+    for (int i = 0; i < g->N; i++)
+        printf("%3d ", i);
+    printf("\n");
+
+    for (int i = 0; i < g->N; i++) {
+        printf("%3d ", i);
+        for (int j = 0; j < g->N; j++)
+            printf("%3d ", g->adj_mat[i][j]);
+
+        printf("\n");
+    }
+}
+
+/**
+ * add_edge - Adds an edge between nodes of two indices. Weight will be added
+ * elsewhere through the `adj_mat` table.
+ *
+ * @g: A `graph` pointer to the graph.
+ * @i: Index/label of the first node.
+ * @j: Index/label of the second node.
+ */
 void add_edge(graph* g, int i, int j) {
     node* node_u = elem_at(g->vertices, i);
     node* node_v = elem_at(g->vertices, j);
