@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+touch CMakeLists.txt
+cmake .
+make
