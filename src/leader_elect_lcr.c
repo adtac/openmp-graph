@@ -66,19 +66,6 @@ int identify_leader(process* processes, int N) {
 }
 
 /**
- * set_leader - Sets the leader for all processes to be `chosen_id`
- *
- * @processes: the list of processes
- * @N:         number of processes
- * @chosen_id: the finally chosen leader
- */
-void set_leader(process* processes, int N, int chosen_id) {
-    #pragma omp parallel for schedule(SCHEDULING_METHOD)
-    for (int i = 0; i < N; i++)
-        processes[i].leader = chosen_id;
-}
-
-/**
  * Uses the distributed leader elect algorithm due to Chang and Roberts (1979)
  * that is used to determine the leader of a ring of nodes connected to one
  * another.

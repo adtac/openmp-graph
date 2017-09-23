@@ -11,4 +11,6 @@ typedef struct {
 
 process* generate_nodes(int);
 
+void set_leader(process*, int, int);
+
 #endif
