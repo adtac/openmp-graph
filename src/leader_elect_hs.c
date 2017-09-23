@@ -17,6 +17,14 @@ typedef struct {
     int stop_initiating;
 } message;
 
+/**
+ * generate_send_messages - Creates a new phase's initial messages.
+ *
+ * @processes: the processes themselves
+ * @l:         current phase number
+ * @N:         total number of processes
+ * @send_ql:   a queuelist object that's going to store this round's messages
+ */
 void generate_send_messages(process* processes,
                    int l,
                    int N,
@@ -44,6 +52,15 @@ void generate_send_messages(process* processes,
     }
 }
 
+/**
+ * propagate_messages - Propagates incomplete messages through the ring.
+ *
+ * @processes: the processes themselves
+ * @l:         current phase number
+ * @N:         total number of processes
+ * @send_ql:   a queuelist object that's going to store this round's messages
+ * @recv_ql:   a temporary queuelist object that will collect and transmit
+ */
 void propagate_messages(process* processes,
                         int l,
                         int N,
@@ -151,6 +168,19 @@ void propagate_messages(process* processes,
      */
 }
 
+/**
+ * check_status - Iterates through every process and checks if there are any
+ * more phases to go through.
+ *
+ * @processes: The processes themselves.
+ * @N:         The number of processes
+ * @send_ql:   A pointer to the to-send queuelist
+ *
+ * Returns:
+ *   2: This phase is done, but no leader has been found yet; phase++
+ *   1: The phase isn't over; some messages haven't propagated completely yet
+ * <=0: Negative of this number is the leader; all phases are complete
+ */
 int check_statuses(process* processes,
                    int N,
                    queuelist* send_ql) {
@@ -172,6 +202,12 @@ int check_statuses(process* processes,
     return 2;
 }
 
+/**
+ * debug_display_queuelist - Prints debug information to stderr. Disabled if
+ * `LOG_LEVEL` is less than 3.
+ *
+ * @ql: A pointer to a queuelist object
+ */
 void debug_display_queuelist(queuelist* ql) {
     DEBUG("displaying the queuelist\n");
     for (int i = 0; i < ql->N; i++) {
