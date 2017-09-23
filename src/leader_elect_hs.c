@@ -224,6 +224,11 @@ void debug_display_queuelist(queuelist* ql) {
     }
 }
 
+/**
+ * Hirshberg-Sinclair algorithm for leader election. Source: Distributed
+ * Algorithms (lecture notes for MIT's 6.852, fall 1992) by Nancy A. Lynch
+ * and Boaz Patt-Sinclair - Section 2.1.1 Algorithm 2
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     if (argc > 1)
