@@ -19,7 +19,7 @@ graph* new_graph(int N, int M) {
     for (int i = 0; i < g->N; i++) {
         node u;
 
-        u.neighbors = new_vector(sizeof(node*));
+        initialize_vector(&u.neighbors, sizeof(node*));
         u.degree = 0;
         u.data = NULL;
         u.label = i;
@@ -68,8 +68,8 @@ void add_edge(graph* g, int i, int j) {
     node* node_u = elem_at(&g->vertices, i);
     node* node_v = elem_at(&g->vertices, j);
 
-    append_to_vector(node_u->neighbors, &node_v);
-    append_to_vector(node_v->neighbors, &node_u);
+    append_to_vector(&node_u->neighbors, &node_v);
+    append_to_vector(&node_v->neighbors, &node_u);
 
     node_u->degree++;
     node_v->degree++;
@@ -81,13 +81,6 @@ void add_edge(graph* g, int i, int j) {
  * @g: The graph to free.
  */
 void free_graph(graph* g) {
-    DEBUG("Freeing graph at %p\n", g);
-
-    DEBUG("Freeing the vertices\n");
-    node* vertices = g->vertices.items;
-    for (int i = 0; i < g->N; i++)
-        free_vector(vertices[i].neighbors);
-    
     DEBUG("Freeing the adjacency matrix\n");
     if (g->adj_mat != NULL) {
         for (int i = 0; i < g->N; i++)
@@ -122,7 +115,7 @@ int is_connected(graph* g) {
         queue_position++;
 
         for (int i = 0; i < cur->degree; i++) {
-            node* neighbor = *((node**) elem_at(cur->neighbors, i));
+            node* neighbor = *((node**) elem_at(&cur->neighbors, i));
             if (visited[neighbor->label] > 0)
                 continue;
 

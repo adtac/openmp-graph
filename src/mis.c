@@ -74,7 +74,7 @@ void decide_mis_entry(graph* g) {
         
         int enter = 1;
         for (int i = 0; i < cur->degree; i++) {
-            node* neighbor = *((node**) elem_at(cur->neighbors, i));
+            node* neighbor = *((node**) elem_at(&cur->neighbors, i));
             payload* neighbor_data = neighbor->data;
 
             if (data->r > neighbor_data->r) {
@@ -104,7 +104,7 @@ void remove_mis_adjacent_nodes(graph* g) {
 
         if (data->in_mis) {
             for (int i = 0; i < cur->degree; i++) {
-                node* neighbor = *((node**) elem_at(cur->neighbors, i));
+                node* neighbor = *((node**) elem_at(&cur->neighbors, i));
                 payload* neighbor_data = neighbor->data;
 
                 neighbor_data->present = 0;
@@ -162,7 +162,7 @@ void verify_and_print_solution(graph* g) {
             continue;
 
         for (int j = 0; j < cur->degree; j++) {
-            node* neighbor = *((node**) elem_at(cur->neighbors, j));
+            node* neighbor = *((node**) elem_at(&cur->neighbors, j));
             payload* neighbor_data = neighbor->data;
 
             if (neighbor_data->in_mis) {

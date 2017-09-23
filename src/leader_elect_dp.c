@@ -44,7 +44,7 @@ void calculate_temporary_x(graph* g) {
 
         int new_x = p->x;
         for (int j = 0; j < cur->degree; j++) {
-            node* neighbor = *((node**) elem_at(cur->neighbors, j));
+            node* neighbor = *((node**) elem_at(&cur->neighbors, j));
             processor* neighbor_p = neighbor->data;
 
             if (new_x < neighbor_p->x)

@@ -36,7 +36,7 @@ graph* generate_new_tree(int N) {
         queue_position++;
 
         for (int i = 0; i < cur->degree; i++) {
-            node* neighbor = *((node**) elem_at(cur->neighbors, i));
+            node* neighbor = *((node**) elem_at(&cur->neighbors, i));
 
             if (visited[neighbor->label])
                 continue;

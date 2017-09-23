@@ -4,7 +4,7 @@
 #include "vector.h"
 
 typedef struct {
-    vector* neighbors;      // a list of pointers to neighbors
+    vector neighbors;      // a list of pointers to neighbors
 
     int degree;             // the out-degree (= in-degree) of the graph
 

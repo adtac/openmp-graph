@@ -63,7 +63,7 @@ int broadcast_start(graph* g, int p) {
         if (data->phase_discovered == p) {
             // we send a "join p+1" message to all quiet neighbors
             for (int j = 0; j < cur->degree; j++) {
-                node* neighbor = *((node**) elem_at(cur->neighbors, j));
+                node* neighbor = *((node**) elem_at(&cur->neighbors, j));
                 payload* neighbor_data = neighbor->data;
 
                 if (neighbor_data->phase_discovered < 0) {
