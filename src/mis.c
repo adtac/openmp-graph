@@ -143,6 +143,10 @@ int do_present_nodes_exist(graph* g) {
  * @g: a pointer to the graph object
  */
 void verify_and_print_solution(graph* g) {
+    /**
+     * Note: there's no `#pragma omp parallel` required here - this is not a
+     * part of the solution computation.
+     */
     INFO("Elements in MIS: ");
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
@@ -153,6 +157,9 @@ void verify_and_print_solution(graph* g) {
     }
     fprintf(stderr, "\n");
 
+    /**
+     * Again: no `#pragma omp parallel` required here.
+     */
     int correct = 1;
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);

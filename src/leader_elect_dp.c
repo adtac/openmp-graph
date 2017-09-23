@@ -89,6 +89,11 @@ int propagate_temporary_x(graph* g) {
 void verify_and_print_solution(graph* g) {
     int disagreement = 0;
     int leader = -1;
+
+    /**
+     * Note: there's no `#pragma omp parallel` required here - this is not a
+     * part of the solution computation.
+     */
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
         processor* p = cur->data;

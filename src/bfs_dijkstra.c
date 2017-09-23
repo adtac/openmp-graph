@@ -85,6 +85,11 @@ int broadcast_start(graph* g, int p) {
  */
 void print_solution(graph* g) {
     int max_distance = 0;
+
+    /**
+     * Note: there's no `#pragma omp parallel` required here - this is not a
+     * part of the solution computation.
+     */
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
