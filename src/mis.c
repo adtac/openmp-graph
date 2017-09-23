@@ -106,17 +106,16 @@ int do_present_nodes_exist(graph* g) {
 }
 
 void verify_and_print_solution(graph* g) {
-    printf("Elements in MIS: ");
+    INFO("Elements in MIS: ");
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(g->vertices, i);
         payload* data = cur->data;
 
         if (data->in_mis)
-            printf("%d ", cur->label);
+            fprintf(stderr, "%d ", cur->label);
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 
-    printf("Verifying... ");
     int correct = 1;
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(g->vertices, i);
@@ -137,9 +136,9 @@ void verify_and_print_solution(graph* g) {
     }
 
     if (correct)
-        printf("Correct\n");
+        INFO("MIS solution verified to be correct\n");
     else
-        printf("Wrong\n");
+        INFO("MIS solution incorrect\n");
 }
 
 /**
