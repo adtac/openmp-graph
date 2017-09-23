@@ -78,6 +78,11 @@ int broadcast_start(graph* g, int p) {
     return nobody_was_discovered;
 }
 
+/**
+ * print_solution - prints a BFS Dijkstra solution
+ *
+ * @g: a pointer to the graph object
+ */
 void print_solution(graph* g) {
     int max_distance = 0;
     for (int i = 0; i < g->N; i++) {
