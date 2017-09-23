@@ -98,6 +98,11 @@ void print_solution(graph* g) {
     INFO("max_distance = %d\n", max_distance);
 }
 
+/**
+ * Based on Roger Wattenhofer's Principles of Distributed Computing's
+ * Algorithm 2.11 Dijkstra BFS (synchronous version), where nodes are added
+ * in phases.
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     int M = 64;
