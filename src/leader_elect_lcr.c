@@ -5,6 +5,45 @@
 
 #include "config.h"
 
+void receive_leaders(process* processes, int N) {
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < N; i++) {
+        int next = (i+1) % N;
+        processes[next].received = processes[i].send;
+    }
+}
+
+void determine_leaders(process* processes, int N) {
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < N; i++) {
+        if (processes[i].received > processes[i].leader) {
+            processes[i].send = processes[i].received;
+            processes[i].leader = processes[i].received;
+        }
+        else if (processes[i].received == processes[i].id) {
+            processes[i].leader = processes[i].id;
+            processes[i].status = 1;
+        }
+    }
+}
+
+int identify_leader(process* processes, int N) {
+    int chosen_id = -1;
+    for (int i = 0; i < N; i++) {
+        if (processes[i].status == 1) {
+            chosen_id = i;
+            break;
+        }
+    }
+
+    return chosen_id;
+}
+
+void set_leader(process* processes, int N, int chosen_id) {
+    for (int i = 0; i < N; i++)
+        processes[i].leader = chosen_id;
+}
+
 /**
  * Uses the distributed leader elect algorithm due to Chang and Roberts (1979)
  * that is used to determine the leader of a ring of nodes connected to one
@@ -22,41 +61,17 @@ int main(int argc, char* argv[]) {
     process* processes = generate_nodes(N);
 
     for (int i = 0; i < N; i++) {
-#pragma omp parallel for schedule(SCHEDULING_METHOD)
-        for (int i = 0; i < N; i++) {
-            int next = (i+1) % N;
-            processes[next].received = processes[i].send;
-        }
-
-#pragma omp parallel for schedule(SCHEDULING_METHOD)
-        for (int i = 0; i < N; i++) {
-            if (processes[i].received > processes[i].leader) {
-                processes[i].send = processes[i].received;
-                processes[i].leader = processes[i].received;
-            }
-            else if (processes[i].received == processes[i].id) {
-                processes[i].leader = processes[i].id;
-                processes[i].status = 1;
-            }
-        }
+        receive_leaders(processes, N);
+        determine_leaders(processes, N);
     }
 
-    int chosen_id = -1;
-    for (int i = 0; i < N; i++) {
-        if (processes[i].status == 1) {
-            chosen_id = i;
-            break;
-        }
-    }
-
+    int chosen_id = identify_leader(processes, N);
     if (chosen_id == -1) {
         printf("Incorrect: no solution found.\n");
         return 1;
     }
 
-    for (int i = 0; i < N; i++)
-        processes[i].leader = chosen_id;
-
+    set_leader(processes, N, chosen_id);
     printf("Chosen leader: %d\n", chosen_id);
 
     return 0;
