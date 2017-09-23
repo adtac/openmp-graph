@@ -2,6 +2,7 @@
 #include <omp.h>
 
 #include "ompdist/election.h"
+#include "ompdist/utils.h"
 
 #include "config.h"
 
@@ -97,12 +98,12 @@ int main(int argc, char* argv[]) {
 
     int chosen_id = identify_leader(processes, N);
     if (chosen_id == -1) {
-        printf("Incorrect: no solution found.\n");
+        INFO("Incorrect: no solution found.\n");
         return 1;
     }
 
     set_leader(processes, N, chosen_id);
-    printf("Chosen leader: %d\n", chosen_id);
+    INFO("Chosen leader: %d\n", chosen_id);
 
     return 0;
 }
