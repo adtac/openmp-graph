@@ -18,6 +18,11 @@ double randnum() {
     return ((double) rand()) / ((double) RAND_MAX);
 }
 
+/**
+ * initialize_graph - Initializes the graph with basic data
+ *
+ * @g: a pointer to the graph object
+ */
 void initialize_graph(graph* g) {
     DEBUG("Initializing graph with payload\n");
     for (int i = 0; i < g->N; i++) {
@@ -33,6 +38,12 @@ void initialize_graph(graph* g) {
     }
 }
 
+/**
+ * generate_random_field - Generates the random field -- a double in the 
+ * range [0, 1) -- for each node.
+ *
+ * @g: a pointer to the graph object
+ */
 void generate_random_field(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
@@ -46,6 +57,12 @@ void generate_random_field(graph* g) {
     }
 }
 
+/**
+ * decide_mis_entry - Depending on each node's neighbors' random values, decide
+ * if that node is entering the MIS.
+ *
+ * @g: a pointer to the graph object
+ */
 void decide_mis_entry(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
@@ -73,6 +90,12 @@ void decide_mis_entry(graph* g) {
     }
 }
 
+/**
+ * remove_mis_adjacent_nodes - If a node has entered the MIS, its neighbors can never
+ * be a part of the MIS. Remove them.
+ *
+ * @g: a pointer to the graph object
+ */
 void remove_mis_adjacent_nodes(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
@@ -90,6 +113,14 @@ void remove_mis_adjacent_nodes(graph* g) {
     }
 }
 
+/**
+ * do_present_nodes_exist - Checks if there are any nodes in the graph that are
+ * still undecided on whether to enter the MIS or not.
+ *
+ * @g: a pointer to the graph object
+ *
+ * Returns 1 if there are such nodes, returns 0 otherwise.
+ */
 int do_present_nodes_exist(graph* g) {
     int keep_going = 0;
 
@@ -105,6 +136,12 @@ int do_present_nodes_exist(graph* g) {
     return keep_going;
 }
 
+/**
+ * verify_and_print_solution - Verifies if the computed solution is correct and
+ * prints the solution.
+ *
+ * @g: a pointer to the graph object
+ */
 void verify_and_print_solution(graph* g) {
     INFO("Elements in MIS: ");
     for (int i = 0; i < g->N; i++) {
