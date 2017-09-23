@@ -22,6 +22,8 @@ void generate_send_messages(process* processes,
                    int N,
                    queuelist* send_ql) {
     DEBUG("Generating 2*%d messages for %d processes\n", N, N);
+
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
         process* p = processes+i;
 
@@ -48,6 +50,8 @@ void propagate_messages(process* processes,
                         queuelist* send_ql,
                         queuelist* recv_ql) {
     DEBUG("propagating messages on phase %d\n", l);
+
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
         DEBUG("i = %d\n", i);
         process* p = processes+i;
@@ -132,6 +136,7 @@ void propagate_messages(process* processes,
      * the last element.
      */
 
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
         process* p = processes+i;
 
