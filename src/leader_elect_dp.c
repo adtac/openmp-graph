@@ -65,6 +65,12 @@ int propagate_temporary_x(graph* g) {
     return something_changed;
 }
 
+/**
+ * verify_and_print_solution - Verifies the computed solution and prints the
+ * agreed upon leader, if there's no disagreement.
+ *
+ * @g: a pointer to the graph
+ */
 void verify_and_print_solution(graph* g) {
     int disagreement = 0;
     int leader = -1;
