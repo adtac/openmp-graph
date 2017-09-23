@@ -26,7 +26,7 @@ void initialize_graph(graph* g) {
     // allocate the data field for each node
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
 
         payload* data = malloc(sizeof(payload));
 
@@ -37,7 +37,7 @@ void initialize_graph(graph* g) {
     }
 
     // set the root node to be a part of T_1 at the beginning
-    node* root = elem_at(g->vertices, 0);
+    node* root = elem_at(&g->vertices, 0);
     payload* data = root->data;
     data->phase_discovered = 0;
 }
@@ -56,7 +56,7 @@ int broadcast_start(graph* g, int p) {
 
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         // this node was just discovered in phase `p`
@@ -86,7 +86,7 @@ int broadcast_start(graph* g, int p) {
 void print_solution(graph* g) {
     int max_distance = 0;
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (data->phase_discovered > max_distance)

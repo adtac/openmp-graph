@@ -12,6 +12,8 @@ typedef struct {
     int used;               // number of objects used
 } vector;
 
+void initialize_vector(vector*, size_t);
+
 vector* new_vector(size_t);
 
 void append_to_vector(vector*, void*);

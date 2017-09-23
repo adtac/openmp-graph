@@ -26,7 +26,7 @@ double randnum() {
 void initialize_graph(graph* g) {
     DEBUG("Initializing graph with payload\n");
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
 
         payload* data = malloc(sizeof(payload));
 
@@ -47,7 +47,7 @@ void initialize_graph(graph* g) {
 void generate_random_field(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (!data->present)
@@ -66,7 +66,7 @@ void generate_random_field(graph* g) {
 void decide_mis_entry(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (!data->present)
@@ -99,7 +99,7 @@ void decide_mis_entry(graph* g) {
 void remove_mis_adjacent_nodes(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (data->in_mis) {
@@ -126,7 +126,7 @@ int do_present_nodes_exist(graph* g) {
 
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (data->present)
@@ -145,7 +145,7 @@ int do_present_nodes_exist(graph* g) {
 void verify_and_print_solution(graph* g) {
     INFO("Elements in MIS: ");
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (data->in_mis)
@@ -155,7 +155,7 @@ void verify_and_print_solution(graph* g) {
 
     int correct = 1;
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
         if (!data->in_mis)

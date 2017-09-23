@@ -6,6 +6,19 @@
 #include "utils.h"
 
 /**
+ * initialize_vector - Initializes the fields of a given vector pointer.
+ *
+ * @v:           a pointer to a vector
+ * @object_size: Size of each object that's going into this vector.
+ */
+void initialize_vector(vector *v, size_t object_size) {
+    v->object_size = object_size;
+    v->allocated = 16;
+    v->items = malloc(v->allocated * v->object_size);
+    v->used = 0;
+}
+
+/**
  * new_vector - Creates a new vector
  *
  * @object_size: Size of each object that's going into this vector.
@@ -15,10 +28,7 @@
 vector* new_vector(size_t object_size) {
     vector* v = (vector*) malloc(1 * sizeof(vector));
 
-    v->object_size = object_size;
-    v->allocated = 16;
-    v->items = malloc(v->allocated * v->object_size);
-    v->used = 0;
+    initialize_vector(v, object_size);
 
     return v;
 }

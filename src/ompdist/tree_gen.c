@@ -24,7 +24,7 @@ graph* generate_new_tree(int N) {
     vector* queue = new_vector(sizeof(node*));
     int queue_position = 0;
 
-    node* root = elem_at(cg->vertices, 0);
+    node* root = elem_at(&cg->vertices, 0);
     append_to_vector(queue, &root);
     visited[root->label] = 1;
 

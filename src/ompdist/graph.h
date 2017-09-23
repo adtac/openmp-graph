@@ -18,7 +18,7 @@ typedef struct {
 } node;
 
 typedef struct {
-    vector* vertices;       // the list of vertices
+    vector vertices;       // the list of vertices
 
     int N;                  // number of vertices
     int M;                  // number of edges

@@ -20,7 +20,7 @@ typedef struct {
  */
 void initialize_graph(graph* g) {
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
 
         processor* p = malloc(sizeof(processor));
 
@@ -39,7 +39,7 @@ void initialize_graph(graph* g) {
 void calculate_temporary_x(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         processor* p = cur->data;
 
         int new_x = p->x;
@@ -68,7 +68,7 @@ int propagate_temporary_x(graph* g) {
     int something_changed = 0;
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         processor* p = cur->data;
 
         if (p->new_x != p->x)
@@ -90,7 +90,7 @@ void verify_and_print_solution(graph* g) {
     int disagreement = 0;
     int leader = -1;
     for (int i = 0; i < g->N; i++) {
-        node* cur = elem_at(g->vertices, i);
+        node* cur = elem_at(&g->vertices, i);
         processor* p = cur->data;
 
         if (leader == -1)

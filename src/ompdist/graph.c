@@ -14,7 +14,8 @@ graph* new_graph(int N, int M) {
     g->N = N;
     g->M = M;
 
-    g->vertices = new_vector(sizeof(node));
+    initialize_vector(&g->vertices, sizeof(node));
+
     for (int i = 0; i < g->N; i++) {
         node u;
 
@@ -24,7 +25,9 @@ graph* new_graph(int N, int M) {
         u.label = i;
         u.weight = 0;
 
-        append_to_vector(g->vertices, &u);
+        printf("here\n");
+        append_to_vector(&g->vertices, &u);
+        printf("here\n");
     }
 
     g->adj_mat = (int**) malloc(N * sizeof(int*));
@@ -62,8 +65,8 @@ void print_graph(graph*g) {
  * @j: Index/label of the second node.
  */
 void add_edge(graph* g, int i, int j) {
-    node* node_u = elem_at(g->vertices, i);
-    node* node_v = elem_at(g->vertices, j);
+    node* node_u = elem_at(&g->vertices, i);
+    node* node_v = elem_at(&g->vertices, j);
 
     append_to_vector(node_u->neighbors, &node_v);
     append_to_vector(node_v->neighbors, &node_u);
@@ -81,10 +84,9 @@ void free_graph(graph* g) {
     DEBUG("Freeing graph at %p\n", g);
 
     DEBUG("Freeing the vertices\n");
-    node* vertices = g->vertices->items;
+    node* vertices = g->vertices.items;
     for (int i = 0; i < g->N; i++)
         free_vector(vertices[i].neighbors);
-    free_vector(g->vertices);
     
     DEBUG("Freeing the adjacency matrix\n");
     if (g->adj_mat != NULL) {
@@ -105,7 +107,7 @@ void free_graph(graph* g) {
 int is_connected(graph* g) {
     int* visited = calloc(g->N, sizeof(int));
 
-    node* root = elem_at(g->vertices, 0);
+    node* root = elem_at(&g->vertices, 0);
 
     visited[root->label] = 1;
 
