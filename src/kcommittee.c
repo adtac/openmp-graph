@@ -232,6 +232,10 @@ end:
         INFO("Produced solution is incorrect\n");
 }
 
+/**
+ * Based on Roger Wattenhofer's Principles of Distributed Computing's
+ * section 23.4.2 on k-Committee election.
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     int M = 64;
