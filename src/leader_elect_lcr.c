@@ -53,10 +53,12 @@ void determine_leaders(process* processes, int N) {
  */
 int identify_leader(process* processes, int N) {
     int chosen_id = -1;
+
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
         if (processes[i].status == 1) {
             chosen_id = i;
-            break;
+            // this will happen at most once
         }
     }
 
@@ -71,6 +73,7 @@ int identify_leader(process* processes, int N) {
  * @chosen_id: the finally chosen leader
  */
 void set_leader(process* processes, int N, int chosen_id) {
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++)
         processes[i].leader = chosen_id;
 }
