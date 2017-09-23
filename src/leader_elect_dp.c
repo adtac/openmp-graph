@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
 
     INFO("%d rounds elapsed\n", num_rounds);
 
-    print_graph(g);
+    // print_graph(g);
 
     verify_and_print_solution(g);
 
