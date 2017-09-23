@@ -3,6 +3,8 @@
 
 #include "ompdist/election.h"
 
+#include "config.h"
+
 /**
  * Uses the distributed leader elect algorithm due to Chang and Roberts (1979)
  * that is used to determine the leader of a ring of nodes connected to one
@@ -20,13 +22,13 @@ int main(int argc, char* argv[]) {
     process* processes = generate_nodes(N);
 
     for (int i = 0; i < N; i++) {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             int next = (i+1) % N;
             processes[next].received = processes[i].send;
         }
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             if (processes[i].received > processes[i].leader) {
                 processes[i].send = processes[i].received;

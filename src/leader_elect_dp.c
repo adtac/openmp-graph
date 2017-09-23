@@ -6,6 +6,8 @@
 #include "ompdist/graph_gen.h"
 #include "ompdist/utils.h"
 
+#include "config.h"
+
 typedef struct {
     int x;              // candidate leader
     int new_x;          // temporary value
@@ -42,7 +44,7 @@ int main(int argc, char* argv[]) {
         num_rounds++;
         something_changed = 0;
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             processor* p = cur->data;
@@ -59,7 +61,7 @@ int main(int argc, char* argv[]) {
             p->new_x = new_x;
         }
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             processor* p = cur->data;

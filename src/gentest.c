@@ -2,6 +2,8 @@
 #include "ompdist/tree_gen.h"
 #include "ompdist/utils.h"
 
+#include "config.h"
+
 int main() {
     graph* g = generate_new_tree(1000);
 

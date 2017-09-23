@@ -6,6 +6,8 @@
 #include "ompdist/graph_gen.h"
 #include "ompdist/utils.h"
 
+#include "config.h"
+
 typedef struct {
     int present;
     int in_mis;
@@ -52,7 +54,7 @@ int main(int argc, char* argv[]) {
     while (keep_going) {
         keep_going = 0;
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             payload* data = cur->data;
@@ -63,7 +65,7 @@ int main(int argc, char* argv[]) {
             data->r = randnum();
         }
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             payload* data = cur->data;
@@ -88,7 +90,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             payload* data = cur->data;
@@ -103,7 +105,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             payload* data = cur->data;

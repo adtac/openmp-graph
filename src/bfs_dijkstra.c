@@ -7,6 +7,8 @@
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
 
+#include "config.h"
+
 #define START 1
 #define JOIN  2
 
@@ -27,7 +29,7 @@ int main(int argc, char* argv[]) {
     graph* g = generate_new_connected_graph(N, M);
 
     // allocate the data field for each node
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
         node* cur = elem_at(g->vertices, i);
 
@@ -51,7 +53,7 @@ int main(int argc, char* argv[]) {
         nobody_was_discovered = 1;
 
         // broadcast "start p" within T_p
-        #pragma omp parallel for schedule(dynamic)
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < N; i++) {
             node* cur = elem_at(g->vertices, i);
             payload* data = cur->data;
