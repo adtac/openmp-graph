@@ -17,20 +17,15 @@ typedef struct {
     int phase_discovered;
 } payload;
 
-int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = 64;
-
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        sscanf(argv[2], "%d", &M);
-    }
-
-    graph* g = generate_new_connected_graph(N, M);
-
+/**
+ * initialize_graph - Initializes the graph with basic data
+ *
+ * @g: a pointer to the graph object
+ */
+void initialize_graph(graph* g) {
     // allocate the data field for each node
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(g->vertices, i);
 
         payload* data = malloc(sizeof(payload));
@@ -45,40 +40,47 @@ int main(int argc, char* argv[]) {
     node* root = elem_at(g->vertices, 0);
     payload* data = root->data;
     data->phase_discovered = 0;
+}
 
-    int p = 0;
+/**
+ * broadcast_start - Broadcasts the start message to elements of T_p
+ *
+ * @g: a pointer to the graph object
+ * @p: current phase
+ *
+ * Returns 1 if no new vertices were discovered, and 0 if new vertices were
+ * discovered.
+ */
+int broadcast_start(graph* g, int p) {
+    int nobody_was_discovered = 1;
 
-    int nobody_was_discovered = 0;
-    while (!nobody_was_discovered) {
-        nobody_was_discovered = 1;
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < g->N; i++) {
+        node* cur = elem_at(g->vertices, i);
+        payload* data = cur->data;
 
-        // broadcast "start p" within T_p
-        #pragma omp parallel for schedule(SCHEDULING_METHOD)
-        for (int i = 0; i < N; i++) {
-            node* cur = elem_at(g->vertices, i);
-            payload* data = cur->data;
+        // this node was just discovered in phase `p`
+        if (data->phase_discovered == p) {
+            // we send a "join p+1" message to all quiet neighbors
+            for (int j = 0; j < cur->degree; j++) {
+                node* neighbor = *((node**) elem_at(cur->neighbors, j));
+                payload* neighbor_data = neighbor->data;
 
-            // this node was just discovered in phase `p`
-            if (data->phase_discovered == p) {
-                // we send a "join p+1" message to all quiet neighbors
-                for (int j = 0; j < cur->degree; j++) {
-                    node* neighbor = *((node**) elem_at(cur->neighbors, j));
-                    payload* neighbor_data = neighbor->data;
-
-                    if (neighbor_data->phase_discovered < 0) {
-                        neighbor_data->phase_discovered = p+1;
-                        neighbor_data->parent_label = cur->label;
-                        nobody_was_discovered = 0;
-                    }
+                if (neighbor_data->phase_discovered < 0) {
+                    neighbor_data->phase_discovered = p+1;
+                    neighbor_data->parent_label = cur->label;
+                    nobody_was_discovered = 0;
                 }
             }
         }
-
-        p += 1;
     }
 
+    return nobody_was_discovered;
+}
+
+void print_solution(graph* g) {
     int max_distance = 0;
-    for (int i = 0; i < N; i++) {
+    for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(g->vertices, i);
         payload* data = cur->data;
 
@@ -89,4 +91,28 @@ int main(int argc, char* argv[]) {
     }
 
     INFO("max_distance = %d\n", max_distance);
+}
+
+int main(int argc, char* argv[]) {
+    int N = 16;
+    int M = 64;
+
+    if (argc > 1) {
+        sscanf(argv[1], "%d", &N);
+        sscanf(argv[2], "%d", &M);
+    }
+
+    graph* g = generate_new_connected_graph(N, M);
+
+    initialize_graph(g);
+
+    int p = 0;
+
+    int nobody_was_discovered = 0;
+    while (!nobody_was_discovered) {
+        nobody_was_discovered = broadcast_start(g, p);
+        p++;
+    }
+
+    print_solution(g);
 }
