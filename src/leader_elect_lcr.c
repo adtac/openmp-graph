@@ -5,6 +5,13 @@
 
 #include "config.h"
 
+/**
+ * receive_leaders - Sets the next process' received leader to be the current
+ * process' candidate.
+ *
+ * @processes: the list of processes
+ * @n:         number of processes
+ */
 void receive_leaders(process* processes, int N) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
@@ -13,6 +20,13 @@ void receive_leaders(process* processes, int N) {
     }
 }
 
+/**
+ * determine_leaders - Based on the received ID of potential leaders, decide
+ * whether to propagate or not.
+ *
+ * @processes: the list of processes
+ * @n:         number of processes
+ */
 void determine_leaders(process* processes, int N) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
@@ -27,6 +41,15 @@ void determine_leaders(process* processes, int N) {
     }
 }
 
+/**
+ * identify_leader - Identifies a leader for the processes by looking at each
+ * process' status field.
+ *
+ * @processes: the list of processes
+ * @N:         number of processes
+ *
+ * Returns `chosen_id`, the id of the chosen leader.
+ */
 int identify_leader(process* processes, int N) {
     int chosen_id = -1;
     for (int i = 0; i < N; i++) {
@@ -39,6 +62,13 @@ int identify_leader(process* processes, int N) {
     return chosen_id;
 }
 
+/**
+ * set_leader - Sets the leader for all processes to be `chosen_id`
+ *
+ * @processes: the list of processes
+ * @N:         number of processes
+ * @chosen_id: the finally chosen leader
+ */
 void set_leader(process* processes, int N, int chosen_id) {
     for (int i = 0; i < N; i++)
         processes[i].leader = chosen_id;
