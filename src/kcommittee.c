@@ -23,6 +23,13 @@ int min(int a, int b) {
     return a < b ? a : b;
 }
 
+/**
+ * min_invitation - computes and sets the lexicographically smaller invitation
+ * in `a`.
+ *
+ * @a: one invitation
+ * @b: the other invitation
+ */
 void min_invitation(invitation* a, invitation* b) {
     if ((b->x < a->x) || (b->x == a->x && b->y < a->y)) {
         a->x = b->x;
@@ -31,6 +38,11 @@ void min_invitation(invitation* a, invitation* b) {
     }
 }
 
+/**
+ * initialize_graph - Initializes the graph with basic data.
+ *
+ * @g: a pointer to the graph object
+ */
 void initialize_graph(graph* g) {
     invitation default_invite = { g->N, g->N };
 
@@ -47,6 +59,13 @@ void initialize_graph(graph* g) {
     }
 }
 
+/**
+ * do_polling - Performs the polling phase of the k-committee algorithm
+ *
+ * @g:         the graph itself
+ * @K:         the maximum number of elements in a committee
+ * @active_ql: a pointer to a queuelist object that's going to store `min_active`s
+ */
 void do_polling(graph* g, int K, queuelist* active_ql) {
     DEBUG("starting polling\n");
 
@@ -91,6 +110,13 @@ void do_polling(graph* g, int K, queuelist* active_ql) {
     }
 }
 
+/**
+ * do_selection - Performs the selection phase of the k-committee algorithm
+ *
+ * @g:         the graph itself
+ * @K:         the maximum number of elements in a committee
+ * @invite_ql: a pointer to a queuelist object that's going to store invitations
+ */
 void do_selection(graph* g, int K, queuelist* invite_ql) {
     DEBUG("starting selection\n");
 
@@ -148,6 +174,12 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
     }
 }
 
+/**
+ * legalize_committees - A final sanity check to make sure there aren't any
+ * illegal committees with IDs larger than the number of vertices.
+ *
+ * @g: the graph itself
+ */
 void legalize_committees(graph* g) {
     DEBUG("making sure there aren't any illegal committees\n");
     for (int i = 0; i < g->N; i++) {
@@ -159,6 +191,13 @@ void legalize_committees(graph* g) {
     }
 }
 
+/**
+ * verify_and_print_solution - Verifies that the generated committee is legal
+ * and prints the solution.
+ *
+ * @g: the graph itself
+ * @K: the maximum number of elements in a committee
+ */
 void verify_and_print_solution(graph* g, int K) {
     int correct = 1;
 
