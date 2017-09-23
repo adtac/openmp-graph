@@ -4,7 +4,7 @@
 #include "vector.h"
 
 typedef struct {
-    vector neighbors;      // a list of pointers to neighbors
+    vector neighbors;       // a list of pointers to neighbors
 
     int degree;             // the out-degree (= in-degree) of the graph
 
@@ -18,12 +18,12 @@ typedef struct {
 } node;
 
 typedef struct {
-    vector vertices;       // the list of vertices
+    vector vertices;        // the list of vertices
 
     int N;                  // number of vertices
     int M;                  // number of edges
 
-    int** adj_mat;         // edge relationships stored as an adjacency graph
+    int** adj_mat;          // edge relationships stored as an adjacency graph
 
     node* root;
 } graph;
