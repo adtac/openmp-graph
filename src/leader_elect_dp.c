@@ -30,6 +30,12 @@ void initialize_graph(graph* g) {
     }
 }
 
+/**
+ * calculate_temporary_x - Calculates the temporary x value based on each
+ * neighbor's x value.
+ *
+ * @g: a pointer to the graph
+ */
 void calculate_temporary_x(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
@@ -49,6 +55,15 @@ void calculate_temporary_x(graph* g) {
     }
 }
 
+/**
+ * propagate_temporary_x - Takes the temporararily calculated `x` value
+ * and makes it permanent.
+ *
+ * @g: a pointer to the graph
+ *
+ * Returns 0 is none of the vertices had a change (i.e. the temporary value
+ * was the same as the original value), or returns 1 if there was a change.
+ */
 int propagate_temporary_x(graph* g) {
     int something_changed = 0;
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
