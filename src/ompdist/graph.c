@@ -25,9 +25,7 @@ graph* new_graph(int N, int M) {
         u.label = i;
         u.weight = 0;
 
-        printf("here\n");
         append_to_vector(&g->vertices, &u);
-        printf("here\n");
     }
 
     g->adj_mat = (int**) malloc(N * sizeof(int*));
