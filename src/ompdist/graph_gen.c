@@ -13,7 +13,7 @@
 graph* generate_new_graph(int N, int M) {
     graph* g = new_graph(N, M);
 
-    DEBUG("Generating edges for graph 0x%x\n", g);
+    DEBUG("Generating edges for graph %p\n", g);
 
     int edges_created = 0;
     while (edges_created < M) {
@@ -66,6 +66,6 @@ graph* generate_new_connected_graph(int N, int M) {
         g = generate_new_graph(N, M);
     } while (!is_connected(g));
 
-    DEBUG("Created a connected graph at 0x%x after %d attempts\n", g, attempts);
+    DEBUG("Created a connected graph at %p after %d attempts\n", g, attempts);
     return g;
 }

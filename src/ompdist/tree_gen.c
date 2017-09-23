@@ -53,6 +53,6 @@ graph* generate_new_tree(int N) {
     free_vector(queue);
     free(visited);
 
-    DEBUG("Created a %d-edged tree (0x%x) of %d vertices\n", edges_added, g, N);
+    DEBUG("Created a %d-edged tree (%p) of %d vertices\n", edges_added, g, N);
     return g;
 }

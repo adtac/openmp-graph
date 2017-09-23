@@ -33,7 +33,7 @@ graph* new_graph(int N, int M) {
 
     g->root = NULL;
 
-    DEBUG("Created new graph 0x%x\n", g);
+    DEBUG("Created new graph %p\n", g);
 
     return g;
 }
@@ -78,7 +78,7 @@ void add_edge(graph* g, int i, int j) {
  * @g: The graph to free.
  */
 void free_graph(graph* g) {
-    DEBUG("Freeing graph at 0x%x\n", g);
+    DEBUG("Freeing graph at %p\n", g);
 
     DEBUG("Freeing the vertices\n");
     node* vertices = g->vertices->items;
