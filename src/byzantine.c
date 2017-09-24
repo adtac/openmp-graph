@@ -211,4 +211,6 @@ int main(int argc, char* argv[]) {
     }
 
     verify_and_print_solution(processors, N);
+
+    return 0;
 }
