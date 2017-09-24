@@ -210,6 +210,9 @@ void verify_and_print_solution(graph* g, int K) {
     int correct = 1;
 
     int* committee_count = malloc(g->N * sizeof(int));
+    for (int i = 0; i < g->N; i++)
+        committee_count[i] = 0;
+
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
