@@ -7,6 +7,8 @@
 #include "ompdist/queues.h"
 #include "ompdist/utils.h"
 
+#include "config.h"
+
 typedef struct {
     int x;
     int y;
@@ -77,6 +79,7 @@ void do_polling(graph* g, int K, queuelist* active_ql) {
          * Broadcast each node's `min_active` to its neighbors.
          */
         DEBUG("broadcasting `min_active`s\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < g->N; i++) {
             node* cur = elem_at(&g->vertices, i);
             payload* data = cur->data;
@@ -96,6 +99,7 @@ void do_polling(graph* g, int K, queuelist* active_ql) {
          * Receive all the broadcasted `min_active`s.
          */
         DEBUG("receiving broadcasted transmissions\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < g->N; i++) {
             node* cur = elem_at(&g->vertices, i);
             payload* data = cur->data;
@@ -121,6 +125,7 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
     DEBUG("starting selection\n");
 
     DEBUG("creating initial invitations\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
@@ -143,6 +148,7 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
          * Broadcast invitations to neighbors.
          */
         DEBUG("broadcasting invitations\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < g->N; i++) {
             node* cur = elem_at(&g->vertices, i);
             payload* data = cur->data;
@@ -158,6 +164,7 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
          * smallest one.
          */
         DEBUG("receiving broadcasted invitations\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
         for (int i = 0; i < g->N; i++) {
             node* cur = elem_at(&g->vertices, i);
             payload* data = cur->data;
@@ -182,6 +189,7 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
  */
 void legalize_committees(graph* g) {
     DEBUG("making sure there aren't any illegal committees\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
