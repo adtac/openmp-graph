@@ -24,6 +24,13 @@ typedef struct {
     int vote;
 } vote;
 
+/**
+ * new_processors - Allocates and initializes N new processors.
+ *
+ * @N: the number of processors
+ *
+ * Returns a pointer to a processor array.
+ */
 processor* new_processors(int N) {
     DEBUG("allocating %d processors\n", N);
     processor* processors = malloc(N * sizeof(processor));
@@ -42,6 +49,16 @@ processor* new_processors(int N) {
     return processors;
 }
 
+/**
+ * any_good_undecided_processor - Checks if there are any good processors that
+ * are still undecided on the vote.
+ *
+ * @processors: a pointer to a processor array
+ * @N:          the number of processors
+ * 
+ * Returns 0 if there aren't any such good, undecided processors. Returns 1
+ * otherwise.
+ */
 int any_good_undecided_processor(processor* processors, int N) {
     int ret = 0;
 
@@ -58,6 +75,13 @@ int any_good_undecided_processor(processor* processors, int N) {
     return ret;
 }
 
+/**
+ * broadcast_vote - Braodcasts each processor's votes to all other nodes.
+ *
+ * @processors: a pointer to a processor array
+ * @N:          the number of processors
+ * @vote_ql:    a queuelist of votes
+ */
 void broadcast_vote(processor* processors, int N, queuelist* vote_ql) {
     DEBUG("broadcasting votes\n");
 
@@ -75,6 +99,13 @@ void broadcast_vote(processor* processors, int N, queuelist* vote_ql) {
     }
 }
 
+/**
+ * receive_votes - Receives and computes teh votes for each node.
+ *
+ * @processors: a pointer to a processor array
+ * @N:          the number of processors
+ * @vote_ql:    a queuelist of votes
+ */
 void receive_votes(processor* processors, int N, queuelist* vote_ql) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < N; i++) {
@@ -116,6 +147,13 @@ void receive_votes(processor* processors, int N, queuelist* vote_ql) {
     }
 }
 
+/**
+ * verify_and_print_solution - Verifies that the computed solution is correct
+ * and prints the solution.
+ *
+ * @processors: a pointer to an array of processors
+ * @N:          the number of processors
+ */
 void verify_and_print_solution(processor* processors, int N) {
     int yes = 0;
     int no = 0;
