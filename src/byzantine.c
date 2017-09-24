@@ -185,6 +185,10 @@ void verify_and_print_solution(processor* processors, int N) {
     INFO("correct: there's consensus: of the %d good processors, yes=%d, no=%d\n", good, yes, no);
 }
 
+/**
+ * Based on section 12.6 Byzantine Agreement of Rajeev Motwani's and Prabakhar
+ * Raghavan's book Randomized Algorithms.
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     if (argc > 1) {
