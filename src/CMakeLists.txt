@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -save-temps")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -save-temps -masm=intel")
 
 include_directories(ompdist)
 add_subdirectory(ompdist)
