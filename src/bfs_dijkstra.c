@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <omp.h>
 
-#include "utils.h"
+#include "ompdist/utils.h"
 #include "ompdist/vector.h"
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
