@@ -12,7 +12,7 @@
  * 2 - Display only warnings and information.
  * 3 - Display everything: warnings, information, and debug statements
  */
-#define LOG_LEVEL 0
+#define LOG_LEVEL 2
 
 #if defined(LOG_LEVEL) && LOG_LEVEL > 0
 #define WARN(fmt, ...)                                                  \
