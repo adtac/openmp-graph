@@ -21,6 +21,11 @@ typedef struct {
     int y;
 } message;
 
+/**
+ * initialize_graph - Initializes the graph nodes with the payload data.
+ *
+ * @g: the graph
+ */
 void initialize_graph(graph* g) {
     for (int i = 0; i < g->N; i++) {
         node* u = elem_at(&g->vertices, i);
@@ -37,6 +42,12 @@ void initialize_graph(graph* g) {
     root_data->distance = 0;
 }
 
+/**
+ * root_message - Intiates the root message.
+ *
+ * @g:    the graph
+ * @recv: ghe recv queuelist
+ */
 void root_message(graph* g, queuelist* recv) {
     DEBUG("sending root message\n");
 
@@ -50,6 +61,15 @@ void root_message(graph* g, queuelist* recv) {
     }
 }
 
+/**
+ * messages_in_queue - Checks if there are any messages in the queues of any
+ * of the nodes.
+ *
+ * @g:    the graph
+ * @recv: ghe recv queuelist
+ *
+ * Returns 1 if there are any messages, 0 otherwise.
+ */
 int messages_in_queue(int N, queuelist* recv) {
     int result = 0;
 
@@ -64,6 +84,15 @@ int messages_in_queue(int N, queuelist* recv) {
     return result;
 }
 
+
+/**
+ * recv_and_send - Receives messages and passes them on (after incrementing
+ * the message distance) to its neighbors.
+ *
+ * @g:    the graph
+ * @recv: ghe recv queuelist
+ * @send: the send queuelist
+ */
 void recv_and_send(graph* g, queuelist* recv, queuelist* send) {
     DEBUG("receiving and sending messages\n");
 
@@ -100,6 +129,14 @@ void recv_and_send(graph* g, queuelist* recv, queuelist* send) {
     }
 }
 
+/**
+ * propagate_messages - Moves messages from the send queuelist to the recv
+ * queuelist.
+ *
+ * @g:    the graph
+ * @recv: ghe recv queuelist
+ * @send: the send queuelist
+ */
 void propagate_messages(graph* g, queuelist* recv, queuelist* send) {
     DEBUG("propagating messages from the send queuelist to recv\n");
 
@@ -112,6 +149,11 @@ void propagate_messages(graph* g, queuelist* recv, queuelist* send) {
     }
 }
 
+/**
+ * print_solution - prints a BFS Bellman-Ford solution
+ *
+ * @g: a pointer to the graph object
+ */
 void print_solution(graph* g) {
     int max_distance = 0;
 
