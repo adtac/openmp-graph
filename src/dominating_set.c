@@ -430,6 +430,8 @@ void verify_and_print_solution(graph* g) {
         fprintf(stderr, "%d ", v->label);
     }
     fprintf(stderr, "\n");
+
+    INFO("Solution verified to be correct because the program halted\n");
 }
 
 /**
