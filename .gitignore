@@ -20,6 +20,7 @@ session.vim
 leader_elect_hs
 kcommittee
 byzantine
+dominating_set
 *.i
 *.bc
 *.s
