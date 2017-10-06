@@ -21,6 +21,7 @@ leader_elect_hs
 kcommittee
 byzantine
 dominating_set
+bellman_ford
 *.i
 *.bc
 *.s
