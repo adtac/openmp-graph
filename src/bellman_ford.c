@@ -170,6 +170,11 @@ void print_solution(graph* g) {
     INFO("max_distance = %d\n", max_distance);
 }
 
+/**
+ * Based on Roger Wattenhofer's Principles of Distributed Computing's
+ * Algorithm 2.13 (Bellman-Ford BFS) to solve the single-source shortest
+ * path problem.
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     int M = 64;
