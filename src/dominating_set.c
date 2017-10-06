@@ -468,4 +468,6 @@ int main(int argc, char* argv[]) {
     }
 
     verify_and_print_solution(g);
+
+    return 0;
 }
