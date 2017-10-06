@@ -451,6 +451,11 @@ void verify_and_print_solution(graph* g) {
     fprintf(stderr, "\n");
 }
 
+/**
+ * Based on Roger Wattenhofer's Principles of Distributed Computing's
+ * Algorithm 26.8 (Fast distributed dominating set algorithm) in the chapter
+ * on dominating sets.
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     int M = 64;
