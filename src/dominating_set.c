@@ -452,8 +452,6 @@ int main(int argc, char* argv[]) {
 
     graph* g = generate_new_connected_graph(N, M);
 
-    print_graph(g);
-
     initialize_graph(g);
 
     while (unjoined_nodes_exist(g)) {
