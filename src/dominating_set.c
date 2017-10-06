@@ -59,7 +59,6 @@ void initialize_graph(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* data = malloc(sizeof(payload));
 
         data->color = WHITE;
@@ -115,7 +114,6 @@ int unjoined_nodes_exist(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* data = v->data;
 
         if (data->color == WHITE) {
@@ -138,7 +136,6 @@ void compute_w(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         v_data->W.used = 0;
@@ -148,7 +145,6 @@ void compute_w(graph* g) {
 
         for (int j = 0; j < v->degree; j++) {
             node* u = *((node**) elem_at(&v->neighbors, j));
-
             payload* u_data = u->data;
 
             if (u_data->color == WHITE)
@@ -171,7 +167,6 @@ void compute_w_tilde(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         v_data->w_tilde = ceil_power_of_2(v_data->w);
@@ -190,7 +185,6 @@ void compute_w_hat(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -222,7 +216,6 @@ void compute_active(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -248,7 +241,6 @@ void compute_s(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -257,7 +249,6 @@ void compute_s(graph* g) {
         int support = v_data->active;
         for (int j = 0; j < v->degree; j++) {
             node* u = *((node**) elem_at(&v->neighbors, j));
-            
             payload* u_data = u->data;
 
             if (u_data->active)
@@ -281,7 +272,6 @@ void compute_s_hat(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -290,7 +280,6 @@ void compute_s_hat(graph* g) {
         int s_hat = 0;
         for (int j = 0; j < v_data->W.used; j++) {
             node* u = *((node**) elem_at(&v_data->W, j));
-            
             payload* u_data = u->data;
 
             if (u_data->s > s_hat)
@@ -314,7 +303,6 @@ void compute_candidacy(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -343,7 +331,6 @@ void compute_c(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -352,7 +339,6 @@ void compute_c(graph* g) {
         v_data->c = 0;
         for (int j = 0; j < v_data->W.used; j++) {
             node* u = *((node**) elem_at(&v_data->W, j));
-
             payload* u_data = u->data;
             
             if (u_data->candidate)
@@ -375,7 +361,6 @@ void compute_join(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->W.used == 0)
@@ -384,7 +369,6 @@ void compute_join(graph* g) {
         int sigma_c = 0;
         for (int j = 0; j < v_data->W.used; j++) {
             node* u = *((node**) elem_at(&v_data->W, j));
-
             payload* u_data = u->data;
 
             sigma_c += u_data->c;
@@ -410,7 +394,6 @@ void colorize(graph* g) {
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (v_data->color != WHITE)
@@ -418,7 +401,6 @@ void colorize(graph* g) {
 
         for (int j = 0; j < v->degree; j++) {
             node* u = *((node**) elem_at(&v->neighbors, j));
-
             payload* u_data = u->data;
 
             if (u_data->color == BLACK)
@@ -440,7 +422,6 @@ void verify_and_print_solution(graph* g) {
     INFO("Vertices in the dominating set: ");
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
-
         payload* v_data = v->data;
 
         if (!v_data->joined)
