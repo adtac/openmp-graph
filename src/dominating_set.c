@@ -403,8 +403,10 @@ void colorize(graph* g) {
             node* u = *((node**) elem_at(&v->neighbors, j));
             payload* u_data = u->data;
 
-            if (u_data->color == BLACK)
+            if (u_data->color == BLACK) {
                 v_data->color = GRAY;
+                break;
+            }
         }
     }
 }
