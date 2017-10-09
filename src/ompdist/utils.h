@@ -46,4 +46,6 @@
 
 void swap(int*, int*);
 
+int input_through_argv(int, char**);
+
 #endif // _UTILS_H_
