@@ -22,6 +22,7 @@ kcommittee
 byzantine
 dominating_set
 bellman_ford
+vertex_coloring
 *.i
 *.bc
 *.s
