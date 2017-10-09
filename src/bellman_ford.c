@@ -21,6 +21,8 @@ typedef struct {
     int y;
 } message;
 
+int ROOT;
+
 /**
  * initialize_graph - Initializes the graph nodes with the payload data.
  *
@@ -37,7 +39,7 @@ void initialize_graph(graph* g) {
         u->data = data;
     }
 
-    node* root = elem_at(&g->vertices, 0);
+    node* root = elem_at(&g->vertices, ROOT);
     payload* root_data = root->data;
     root_data->distance = 0;
 }
@@ -51,7 +53,7 @@ void initialize_graph(graph* g) {
 void root_message(graph* g, queuelist* recv) {
     DEBUG("sending root message\n");
 
-    node* root = elem_at(&g->vertices, 0);
+    node* root = elem_at(&g->vertices, ROOT);
 
     for (int j = 0; j < root->degree; j++) {
         node* u = *((node**) elem_at(&root->neighbors, j));
@@ -176,15 +178,56 @@ void print_solution(graph* g) {
  * path problem.
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = 64;
+    int N;
+    int M;
+    graph* g;
 
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        sscanf(argv[2], "%d", &M);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d\n", &N);
+
+        g = new_graph(N, 0);
+
+        fscanf(in, "%d\n", &ROOT);
+        
+        M = 0;
+
+        char* line = malloc(N+2);
+        for (int i = 0; i < N; i++) {
+            fscanf(in, "%s", line);
+            printf("%s\n", line);
+            for (int j = 0; j < N; j++) {
+                switch (line[j]) {
+                    case '0':
+                        add_edge(g, i, j);
+                        break;
+
+                    case '1':
+                        M++;
+                        add_edge(g, j, i);
+                        break;
+                }
+            }
+        }
+        free(line);
+
+        M /= 2;
+        g->M = M;
     }
+    else {
+        N = 16;
+        M = 64;
 
-    graph* g = generate_new_connected_graph(N, M);
+        if (argc > 1) {
+            sscanf(argv[1], "%d", &N);
+            sscanf(argv[2], "%d", &M);
+        }
+
+        g = generate_new_connected_graph(N, M);
+
+        ROOT = 0;
+    }
 
     initialize_graph(g);
 
