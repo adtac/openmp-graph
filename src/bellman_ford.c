@@ -58,7 +58,7 @@ void root_message(graph* g, queuelist* recv) {
     for (int j = 0; j < root->degree; j++) {
         node* u = *((node**) elem_at(&root->neighbors, j));
 
-        message m = {0, 1};
+        message m = {ROOT, 1};
         enqueue(recv, u->label, &m);
     }
 }
