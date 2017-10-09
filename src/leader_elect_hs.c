@@ -230,11 +230,30 @@ void debug_display_queuelist(queuelist* ql) {
  * and Boaz Patt-Sinclair - Section 2.1.1 Algorithm 2
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    if (argc > 1)
-        sscanf(argv[1], "%d", &N);
+    int N;
+    process* processes;
 
-    process* processes = generate_nodes(N);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d", &N);
+
+        processes = generate_nodes(N);
+
+        for (int i = 0; i < N; i++) {
+            int x;
+            fscanf(in, "%d", &x);
+            processes[i].id = processes[i].leader = processes[i].send = x;
+        }
+    }
+    else {
+        N = 16;
+
+        if (argc > 1)
+            sscanf(argv[1], "%d", &N);
+
+        processes = generate_nodes(N);
+    }
 
     /**
      * We need two different queue lists for the following reason. Say there
