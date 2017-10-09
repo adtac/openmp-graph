@@ -5,13 +5,13 @@ graph algorithms. Included are:
 
  - Shortest path tree (due to Bellman and Ford)
  - Shortest path tree (due to Dijkstra)
- - Byzantine consensus
- - Dominating set
- - k-Committee
+ - Byzantine consensus (due to Motwani and Raghavan)
+ - Dominating set (due to Wattenhofer)
+ - k-Committee (due to Wattenhofer)
  - Leader election (due to David Peleg)
  - Leader election (due to Hirschberg and Sinclair)
  - Leader election (due to Chang and Roberts)
- - Maximal independent set
+ - Maximal independent set (due to Wattenhofer)
 
 ### Compilation
 
