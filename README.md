@@ -23,8 +23,30 @@ $ cmake .
 $ make
 ```
 
-This should produce a binary for each problem. These programs may take
-arguments -- please see the source code for details.
+This should produce a binary for each algorithm.
+
+### Running the executables
+
+Each program can be run with no arguments. A default input will be generated and
+used. However, you can also specify the input parameters - for example, in
+dominating set, if you want to generate a graph of 200 vertices and 1000 edges,
+you will execute the program as:
+
+```bash
+$ ./dominating_set 200 1000
+```
+
+The exact parameters for each problem varies - you can take a look at the source
+code to know the exact specifications.
+
+Alternatively, you can provide an input file. This file needs to adhere to the
+particular format used in IMSuite. It will be automatically parsed and used as
+the input data. For example, if you wanted to run `dominating_set` on the test
+file `inputdominatingSet_16_-spar_min.txt`, you'll execute the program as:
+
+```bash
+$ ./dominating_set - ../input/inputdominatingSet_16_-spar_min.txt
+```
 
 ### Logging
 
