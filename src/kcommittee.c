@@ -15,6 +15,7 @@ typedef struct {
 } invitation;
 
 typedef struct {
+    int default_leader;
     int leader;
     int committee;
     int min_active;
@@ -43,16 +44,18 @@ void min_invitation(invitation* a, invitation* b) {
 /**
  * initialize_graph - Initializes the graph with basic data.
  *
- * @g: a pointer to the graph object
+ * @g:     a pointer to the graph object
+ * @kvals: the initial leader values
  */
-void initialize_graph(graph* g) {
+void initialize_graph(graph* g, int* kvals) {
     invitation default_invite = { g->N, g->N };
 
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
         payload* data = malloc(sizeof(payload));
 
-        data->leader = i;
+        data->leader = kvals[i];
+        data->default_leader = kvals[i];
         data->committee = g->N+1;
         data->min_active = g->N+1;
         data->invite = default_invite;
@@ -85,7 +88,7 @@ void do_polling(graph* g, int K, queuelist* active_ql) {
             payload* data = cur->data;
 
             if (data->committee == g->N+1)
-                data->min_active = i;
+                data->min_active = data->default_leader;
             else
                 data->min_active = g->N+1;
 
@@ -130,7 +133,7 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
         node* cur = elem_at(&g->vertices, i);
         payload* data = cur->data;
 
-        if (data->leader == i) {
+        if (data->leader == data->default_leader) {
             data->invite.x = i;
             data->invite.y = data->min_active;
         }
@@ -175,7 +178,7 @@ void do_selection(graph* g, int K, queuelist* invite_ql) {
             }
 
             // make sure the invite is for us
-            if (data->invite.y == i && data->invite.x == data->leader)
+            if (data->invite.y == data->default_leader && data->invite.x == data->leader)
                 data->committee = data->leader;
         }
     }
@@ -248,19 +251,52 @@ end:
  * section 23.4.2 on k-Committee election.
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = 64;
-    int K = 4;
+    int N;
+    int M;
+    int K;
+    int* kvals;
+    graph* g;
 
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        sscanf(argv[2], "%d", &M);
-        sscanf(argv[3], "%d", &K);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d\n", &N);
+        kvals = malloc(N * sizeof(int));
+
+        fscanf(in, "%d\n", &K);
+
+        g = new_graph(N, 0);
+        
+        g->M = M = read_graph(g, in);
+
+        fscanf(in, "\n");
+        for (int i = 0; i < N; i++)
+            fscanf(in, "%d", &kvals[i]);
+
+        fclose(in);
+    }
+    else {
+        N = 16;
+        M = 64;
+        K = 4;
+
+        if (argc > 1) {
+            sscanf(argv[1], "%d", &N);
+            sscanf(argv[2], "%d", &M);
+            sscanf(argv[3], "%d", &K);
+        }
+
+        g = generate_new_connected_graph(N, M);
+
+        kvals = malloc(N * sizeof(int));
+        for (int i = 0; i < N; i++)
+            kvals[i] = i;
     }
 
-    graph* g = generate_new_connected_graph(N, M);
+    g = generate_new_connected_graph(N, M);
 
-    initialize_graph(g);
+    initialize_graph(g, kvals);
+    free(kvals);
 
     queuelist* active_ql = new_queuelist(N, sizeof(int));
     queuelist* invite_ql = new_queuelist(N, sizeof(invitation));
