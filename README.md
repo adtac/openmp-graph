@@ -12,6 +12,7 @@ graph algorithms. Included are:
  - Leader election (due to Hirschberg and Sinclair)
  - Leader election (due to Chang and Roberts)
  - Maximal independent set (due to Wattenhofer)
+ - Vertex coloring (due Wattenhofer)
 
 ### Compilation
 
