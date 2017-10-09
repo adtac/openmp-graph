@@ -30,7 +30,7 @@ graph* new_graph(int N, int M) {
 
     g->adj_mat = (int**) malloc(N * sizeof(int*));
     for (int i = 0; i < g->N; i++)
-        g->adj_mat[i] = (int*) calloc(M, sizeof(int));
+        g->adj_mat[i] = (int*) calloc(N, sizeof(int));
 
     g->root = NULL;
 
