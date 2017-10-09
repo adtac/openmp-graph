@@ -185,7 +185,7 @@ void verify_and_print_solution(graph *g) {
         DEBUG("%d->color = %d\n", u->label, u_data->color);
 
         if (u_data->color >= 6 || u_data->color < 0) {
-            WARN("%d->color is not between [0, 5]\n");
+            WARN("%d->color is not between [0, 5]\n", u->label);
             correct = 0;
         }
 
