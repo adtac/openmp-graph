@@ -18,6 +18,13 @@ typedef struct {
     int parent;
 } payload;
 
+/**
+ * num_digits - Number of digits (in binary) required to represent each label.
+ *
+ * @g: the graph
+ *
+ * Returns the number of required digits.
+ */
 int num_digits(graph* g) {
     int N = g->N;
 
