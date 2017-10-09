@@ -119,34 +119,13 @@ int main(int argc, char* argv[]) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
-
         g = new_graph(N, 0);
 
         fscanf(in, "%d\n", &ROOT);
 
-        M = 0;
+        g->M = M = read_graph(g, in);
 
-        char* line = malloc(N+2);
-        for (int i = 0; i < N; i++) {
-            fscanf(in, "%s", line);
-            printf("%s\n", line);
-            for (int j = 0; j < N; j++) {
-                switch (line[j]) {
-                    case '0':
-                        add_edge(g, i, j);
-                        break;
-
-                    case '1':
-                        M++;
-                        add_edge(g, j, i);
-                        break;
-                }
-            }
-        }
-        free(line);
-
-        M /= 2;
-        g->M = M;
+        fclose(in);
     }
     else {
         N = 16;
