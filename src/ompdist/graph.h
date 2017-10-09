@@ -1,6 +1,8 @@
 #ifndef _GRAPH_H_
 #define _GRAPH_H_
 
+#include <stdio.h>
+
 #include "vector.h"
 
 typedef struct {
@@ -29,6 +31,8 @@ typedef struct {
 } graph;
 
 graph* new_graph();
+
+int read_graph(graph*, FILE*);
 
 void print_graph(graph*);
 

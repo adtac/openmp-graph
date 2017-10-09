@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "graph.h"
@@ -37,6 +38,33 @@ graph* new_graph(int N, int M) {
     DEBUG("Created new graph %p\n", g);
 
     return g;
+}
+
+int read_graph(graph* g, FILE* in) {
+    int M = 0;
+
+    char* line = malloc(g->N + 2);
+
+    for (int i = 0; i < g->N; i++) {
+        fscanf(in, "%s", line);
+        printf("%s\n", line);
+        for (int j = 0; j < g->N; j++) {
+            switch (line[j]) {
+                case '0':
+                    add_edge(g, i, j);
+                    break;
+
+                case '1':
+                    M++;
+                    add_edge(g, j, i);
+                    break;
+            }
+        }
+    }
+
+    free(line);
+
+    return M/2;
 }
 
 void print_graph(graph*g) {
