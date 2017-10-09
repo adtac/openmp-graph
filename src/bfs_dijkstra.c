@@ -111,19 +111,20 @@ void print_solution(graph* g) {
  * in phases.
  */
 int main(int argc, char* argv[]) {
+    int N;
+    int M;
     graph* g;
 
     if (input_through_argv(argc, argv)) {
         FILE* in = fopen(argv[2], "r");
 
-        int N;
         fscanf(in, "%d\n", &N);
 
         g = new_graph(N, 0);
 
         fscanf(in, "%d\n", &ROOT);
 
-        int M = 0;
+        M = 0;
 
         char* line = malloc(N+2);
         for (int i = 0; i < N; i++) {
@@ -148,8 +149,8 @@ int main(int argc, char* argv[]) {
         g->M = M;
     }
     else {
-        int N = 16;
-        int M = 64;
+        N = 16;
+        M = 64;
 
         if (argc > 1) {
             sscanf(argv[1], "%d", &N);
