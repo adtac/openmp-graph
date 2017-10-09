@@ -47,7 +47,6 @@ int read_graph(graph* g, FILE* in) {
 
     for (int i = 0; i < g->N; i++) {
         fscanf(in, "%s", line);
-        printf("%s\n", line);
         for (int j = 0; j < g->N; j++) {
             switch (line[j]) {
                 case '0':
