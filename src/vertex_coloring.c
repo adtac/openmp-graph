@@ -9,7 +9,7 @@
 
 #include "config.h"
 
-#define ROOT 0
+int ROOT;
 
 typedef struct {
     int color;
@@ -211,15 +211,33 @@ void verify_and_print_solution(graph *g) {
  * Algorithm 1.17 to color a tree.
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = N-1;
+    int N;
+    int M;
+    graph* g;
 
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        M = N-1;
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d\n", &N);
+        g = new_graph(N, 0);
+
+        fscanf(in, "%d\n", &ROOT);
+
+        g->M = M = read_graph(g, in);
+
+        fclose(in);
     }
+    else {
+        N = 16;
 
-    graph* g = generate_new_tree(N);
+        if (argc > 1)
+            sscanf(argv[1], "%d", &N);
+        M = N-1;
+
+        ROOT = 0;
+
+        g = generate_new_tree(N);
+    }
 
     int digits = num_digits(g);
     DEBUG("digits = %d\n", digits);
