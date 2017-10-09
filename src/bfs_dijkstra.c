@@ -12,6 +12,8 @@
 #define START 1
 #define JOIN  2
 
+int ROOT;
+
 typedef struct {
     int parent_label;
     int phase_discovered;
@@ -37,7 +39,7 @@ void initialize_graph(graph* g) {
     }
 
     // set the root node to be a part of T_1 at the beginning
-    node* root = elem_at(&g->vertices, 0);
+    node* root = elem_at(&g->vertices, ROOT);
     payload* data = root->data;
     data->phase_discovered = 0;
 }
@@ -109,15 +111,55 @@ void print_solution(graph* g) {
  * in phases.
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = 64;
+    graph* g;
 
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        sscanf(argv[2], "%d", &M);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        int N;
+        fscanf(in, "%d\n", &N);
+
+        g = new_graph(N, 0);
+
+        fscanf(in, "%d\n", &ROOT);
+
+        int M = 0;
+
+        char* line = malloc(N+2);
+        for (int i = 0; i < N; i++) {
+            fscanf(in, "%s", line);
+            printf("%s\n", line);
+            for (int j = 0; j < N; j++) {
+                switch (line[j]) {
+                    case '0':
+                        add_edge(g, i, j);
+                        break;
+
+                    case '1':
+                        M++;
+                        add_edge(g, j, i);
+                        break;
+                }
+            }
+        }
+        free(line);
+
+        M /= 2;
+        g->M = M;
     }
+    else {
+        int N = 16;
+        int M = 64;
 
-    graph* g = generate_new_connected_graph(N, M);
+        if (argc > 1) {
+            sscanf(argv[1], "%d", &N);
+            sscanf(argv[2], "%d", &M);
+        }
+
+        g = generate_new_connected_graph(N, M);
+
+        ROOT = 0;
+    }
 
     initialize_graph(g);
 
