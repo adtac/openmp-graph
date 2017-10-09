@@ -193,15 +193,31 @@ void verify_and_print_solution(graph* g) {
  *     See Algorithm 7.12 (Fast MIS-2)
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = 64;
+    int N;
+    int M;
+    graph* g;
 
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        sscanf(argv[2], "%d", &M);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d\n", &N);
+        g = new_graph(N, 0);
+
+        g->M = M = read_graph(g, in);
+
+        fclose(in);
     }
+    else {
+        N = 16;
+        M = 64;
 
-    graph* g = generate_new_connected_graph(N, M);
+        if (argc > 1) {
+            sscanf(argv[1], "%d", &N);
+            sscanf(argv[2], "%d", &M);
+        }
+
+        g = generate_new_connected_graph(N, M);
+    }
 
     initialize_graph(g);
 
