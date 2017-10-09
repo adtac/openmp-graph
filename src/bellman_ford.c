@@ -46,7 +46,7 @@ void initialize_graph(graph* g) {
  * root_message - Intiates the root message.
  *
  * @g:    the graph
- * @recv: ghe recv queuelist
+ * @recv: the recv queuelist
  */
 void root_message(graph* g, queuelist* recv) {
     DEBUG("sending root message\n");
@@ -66,7 +66,7 @@ void root_message(graph* g, queuelist* recv) {
  * of the nodes.
  *
  * @g:    the graph
- * @recv: ghe recv queuelist
+ * @recv: the recv queuelist
  *
  * Returns 1 if there are any messages, 0 otherwise.
  */
@@ -90,7 +90,7 @@ int messages_in_queue(int N, queuelist* recv) {
  * the message distance) to its neighbors.
  *
  * @g:    the graph
- * @recv: ghe recv queuelist
+ * @recv: the recv queuelist
  * @send: the send queuelist
  */
 void recv_and_send(graph* g, queuelist* recv, queuelist* send) {
@@ -134,7 +134,7 @@ void recv_and_send(graph* g, queuelist* recv, queuelist* send) {
  * queuelist.
  *
  * @g:    the graph
- * @recv: ghe recv queuelist
+ * @recv: the recv queuelist
  * @send: the send queuelist
  */
 void propagate_messages(graph* g, queuelist* recv, queuelist* send) {
