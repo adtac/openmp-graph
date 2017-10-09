@@ -75,11 +75,30 @@ int identify_leader(process* processes, int N) {
  *   - http://www.cse.iitm.ac.in/~augustine/cs6100_even2012/slides/13_LeaderElection.pdf
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    if (argc > 1)
-        sscanf(argv[1], "%d", &N);
+    int N;
+    process* processes;
 
-    process* processes = generate_nodes(N);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d", &N);
+
+        processes = generate_nodes(N);
+
+        for (int i = 0; i < N; i++) {
+            int x;
+            fscanf(in, "%d", &x);
+            processes[i].id = processes[i].leader = processes[i].send = x;
+        }
+    }
+    else {
+        N = 16;
+
+        if (argc > 1)
+            sscanf(argv[1], "%d", &N);
+
+        processes = generate_nodes(N);
+    }
 
     for (int i = 0; i < N; i++) {
         receive_leaders(processes, N);
