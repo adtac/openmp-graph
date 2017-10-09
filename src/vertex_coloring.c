@@ -199,6 +199,10 @@ void verify_and_print_solution(graph *g) {
         INFO("solution incorrect\n");
 }
 
+/**
+ * Based on Roger Wattenhofer's Principles of Distributed Computing's
+ * Algorithm 1.17 to color a tree.
+ */
 int main(int argc, char* argv[]) {
     int N = 16;
     int M = N-1;
