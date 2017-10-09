@@ -31,7 +31,7 @@ int num_digits(graph* g) {
 }
 
 /**
- * initialize - sets the initial values for various vertex parameters
+ * initialize_graph: Initializes the graph.
  *
  * @g: the graph
  */
