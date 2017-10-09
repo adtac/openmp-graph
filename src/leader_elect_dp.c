@@ -16,15 +16,16 @@ typedef struct {
 /**
  * initialize_graph - Initializes the graph with basic data
  *
- * @g: a pointer to the graph object
+ * @g:     a pointer to the graph object
+ * @xvals: initial x values
  */
-void initialize_graph(graph* g) {
+void initialize_graph(graph* g, int* xvals) {
     for (int i = 0; i < g->N; i++) {
         node* cur = elem_at(&g->vertices, i);
 
         processor* p = malloc(sizeof(processor));
 
-        p->x = i;
+        p->x = xvals[i];
 
         cur->data = p;
     }
@@ -116,17 +117,44 @@ void verify_and_print_solution(graph* g) {
  * to determine a leader for any general network in a distributed fashion.
  */
 int main(int argc, char* argv[]) {
-    int N = 16;
-    int M = 64;
+    int N;
+    int M;
+    int* xvals;
+    graph* g;
 
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &N);
-        sscanf(argv[2], "%d", &M);
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d\n", &N);
+        g = new_graph(N, 0);
+        xvals = malloc(N * sizeof(int));
+
+        g->M = M = read_graph(g, in);
+
+        fscanf(in, "\n");
+        for (int i = 0; i < N; i++)
+            fscanf(in, "%d", &xvals[i]);
+
+        fclose(in);
+    }
+    else {
+        N = 16;
+        M = 64;
+
+        if (argc > 1) {
+            sscanf(argv[1], "%d", &N);
+            sscanf(argv[2], "%d", &M);
+        }
+
+        g = generate_new_connected_graph(N, M);
+
+        xvals = malloc(N * sizeof(int));
+        for (int i = 0; i < N; i++)
+            xvals[i] = i;
     }
 
-    graph* g = generate_new_connected_graph(N, M);
-
-    initialize_graph(g);
+    initialize_graph(g, xvals);
+    free(xvals);
 
     int something_changed = 1;
     int num_rounds = 0;
