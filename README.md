@@ -1,6 +1,6 @@
 ## Benchmarking Distributed Algorithms with OpenMP
 
-In this repository, you'll find the implementation of various distributed
+In this repository, you'll find an implementation of various distributed
 graph algorithms. Included are:
 
  - Shortest path tree (due to Bellman and Ford)
