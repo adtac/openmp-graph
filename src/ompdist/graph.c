@@ -50,12 +50,11 @@ int read_graph(graph* g, FILE* in) {
         for (int j = 0; j < g->N; j++) {
             switch (line[j]) {
                 case '0':
-                    add_edge(g, i, j);
                     break;
 
                 case '1':
                     M++;
-                    add_edge(g, j, i);
+                    add_edge(g, i, j);
                     break;
             }
         }
