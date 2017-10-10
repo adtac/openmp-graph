@@ -155,9 +155,9 @@ int verify_and_print_solution(graph* g) {
         payload* data = cur->data;
 
         if (data->in_mis)
-            fprintf(stderr, "%d ", cur->label);
+            fprintf(stdout, "%d ", cur->label);
     }
-    fprintf(stderr, "\n");
+    fprintf(stdout, "\n");
 
     /**
      * Again: no `#pragma omp parallel` required here.

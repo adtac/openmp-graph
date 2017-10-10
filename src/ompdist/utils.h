@@ -17,7 +17,7 @@
 #if defined(LOG_LEVEL) && LOG_LEVEL > 0
 #define WARN(fmt, ...)                                                  \
     do {                                                                \
-        fprintf(stderr, "[warning] %s:%d:%s(): " fmt,                   \
+        fprintf(stdout, "[warning] %s:%d:%s(): " fmt,                   \
                 basename(__FILE__), __LINE__, __func__, ##__VA_ARGS__); \
     } while (0)
 #else
@@ -27,7 +27,7 @@
 #if defined(LOG_LEVEL) && LOG_LEVEL > 1
 #define INFO(fmt, ...)                                                  \
     do {                                                                \
-        fprintf(stderr, "[info] %s:%d:%s(): " fmt,                      \
+        fprintf(stdout, "[info] %s:%d:%s(): " fmt,                      \
                 basename(__FILE__), __LINE__, __func__, ##__VA_ARGS__); \
     } while (0)
 #else
@@ -37,7 +37,7 @@
 #if defined(LOG_LEVEL) && LOG_LEVEL > 2
 #define DEBUG(fmt, ...)                                                 \
     do {                                                                \
-        fprintf(stderr, "[debug] %s:%d:%s(): " fmt,                     \
+        fprintf(stdout, "[debug] %s:%d:%s(): " fmt,                     \
                 basename(__FILE__), __LINE__, __func__, ##__VA_ARGS__); \
     } while (0)
 #else

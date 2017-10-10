@@ -429,9 +429,9 @@ int verify_and_print_solution(graph* g) {
         if (!v_data->joined)
             continue;
 
-        fprintf(stderr, "%d ", v->label);
+        fprintf(stdout, "%d ", v->label);
     }
-    fprintf(stderr, "\n");
+    fprintf(stdout, "\n");
 
     INFO("Solution verified to be correct because the program halted\n");
 

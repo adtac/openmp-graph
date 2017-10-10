@@ -203,7 +203,7 @@ int check_statuses(process* processes,
 }
 
 /**
- * debug_display_queuelist - Prints debug information to stderr. Disabled if
+ * debug_display_queuelist - Prints debug information to stdout. Disabled if
  * `LOG_LEVEL` is less than 3.
  *
  * @ql: A pointer to a queuelist object
