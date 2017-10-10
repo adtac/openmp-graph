@@ -153,8 +153,10 @@ void receive_votes(processor* processors, int N, queuelist* vote_ql) {
  *
  * @processors: a pointer to an array of processors
  * @N:          the number of processors
+ *
+ * Returns 1 if there's no consensus. Returns 0 if there's a consensus.
  */
-void verify_and_print_solution(processor* processors, int N) {
+int verify_and_print_solution(processor* processors, int N) {
     int yes = 0;
     int no = 0;
     int good = 0;
@@ -174,15 +176,16 @@ void verify_and_print_solution(processor* processors, int N) {
 
     if (yes+no != good) {
         WARN("incorrect: some processors haven't decided yet\n");
-        return;
+        return 1;
     }
 
     if (yes != 0 && no != 0) {
         WARN("incorrect: there's no consensus\n");
-        return;
+        return 1;
     }
 
     INFO("correct: there's consensus: of the %d good processors, yes=%d, no=%d\n", good, yes, no);
+    return 0;
 }
 
 /**
@@ -210,7 +213,5 @@ int main(int argc, char* argv[]) {
         receive_votes(processors, N, vote_ql);
     }
 
-    verify_and_print_solution(processors, N);
-
-    return 0;
+    return verify_and_print_solution(processors, N);
 }
