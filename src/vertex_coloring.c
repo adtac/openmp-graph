@@ -175,8 +175,10 @@ void six_color_tree(graph *g, int digits) {
  * prints the coloring.
  *
  * @g: the graph
+ *
+ * Returns 0 if the solution is correct. Returns 1 otherwise.
  */
-void verify_and_print_solution(graph *g) {
+int verify_and_print_solution(graph *g) {
     int correct = 1;
     for(int i = 0; i < g->N; i++) {
         node* u = elem_at(&g->vertices, i);
@@ -204,6 +206,8 @@ void verify_and_print_solution(graph *g) {
         INFO("solution verified to be correct\n");
     else
         INFO("solution incorrect\n");
+
+    return !correct;
 }
 
 /**
@@ -248,5 +252,5 @@ int main(int argc, char* argv[]) {
         six_color_tree(g, digits);
     } while (again(g));
 
-    verify_and_print_solution(g);
+    return verify_and_print_solution(g);
 }
