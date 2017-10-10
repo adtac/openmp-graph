@@ -86,8 +86,11 @@ int propagate_temporary_x(graph* g) {
  * agreed upon leader, if there's no disagreement.
  *
  * @g: a pointer to the graph
+ *
+ * Returns 0 if everything is verified to be correct. Returns 1 if there's a
+ * disagreement.
  */
-void verify_and_print_solution(graph* g) {
+int verify_and_print_solution(graph* g) {
     int disagreement = 0;
     int leader = -1;
 
@@ -110,6 +113,8 @@ void verify_and_print_solution(graph* g) {
 
     if (!disagreement)
         INFO("Correct! All nodes have agreed to have %d as the leader.\n", leader);
+
+    return !disagreement;
 }
 
 /**
@@ -170,7 +175,5 @@ int main(int argc, char* argv[]) {
 
     // print_graph(g);
 
-    verify_and_print_solution(g);
-
-    return 0;
+    return verify_and_print_solution(g);
 }
