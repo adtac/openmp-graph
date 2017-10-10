@@ -18,6 +18,8 @@ input[vertex_coloring]=vertexColoring
 cmake .
 make
 
+mkdir -p ../output
+
 for problem in "${!input[@]}"; do
     input_name="${input[$problem]}"
     for input_filename in ../input/input${input_name}*; do
