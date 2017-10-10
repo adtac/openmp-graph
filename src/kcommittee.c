@@ -297,8 +297,6 @@ int main(int argc, char* argv[]) {
             kvals[i] = i;
     }
 
-    g = generate_new_connected_graph(N, M);
-
     initialize_graph(g, kvals);
     free(kvals);
 
