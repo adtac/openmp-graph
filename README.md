@@ -48,6 +48,27 @@ file `inputdominatingSet_16_-spar_min.txt`, you'll execute the program as:
 $ ./dominating_set - /path/to/input/inputdominatingSet_16_-spar_min.txt
 ```
 
+### Running the benchmarking tool
+
+In the `src/` directory, a script `run_tests` is included. This tool can be used
+to automate the testing process. For example, if all the input test files from
+IMSuite are present in `input/`, go into `src/` and run:
+
+```bash
+$ cd src
+$ ./run_tests
+```
+
+This would automatically find all the input files and run each executable
+against each corresponding input file. The wall clock duration is measured, and
+and the exit code (which tells you whether the produced solution was correct or
+incorrect) is noted. If there's an error, the corresponding problem and input
+file is printed to screen.
+
+Each input file's associated wall clock run time is stored in a file called
+`output_times`. This is done regardless of whether the program exited with
+return code 0 or not.
+
 ### Logging
 
 Modify the value of `LOG_LEVEL` in `utils.h` to tune the level of logging:
