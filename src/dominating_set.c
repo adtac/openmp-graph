@@ -420,7 +420,7 @@ void colorize(graph* g) {
  *
  * @g: the graph
  */
-void verify_and_print_solution(graph* g) {
+int verify_and_print_solution(graph* g) {
     INFO("Vertices in the dominating set: ");
     for (int i = 0; i < g->N; i++) {
         node* v = elem_at(&g->vertices, i);
@@ -434,6 +434,8 @@ void verify_and_print_solution(graph* g) {
     fprintf(stderr, "\n");
 
     INFO("Solution verified to be correct because the program halted\n");
+
+    return 0;
 }
 
 /**
@@ -484,7 +486,5 @@ int main(int argc, char* argv[]) {
         colorize(g);
     }
 
-    verify_and_print_solution(g);
-
-    return 0;
+    return verify_and_print_solution(g);
 }
