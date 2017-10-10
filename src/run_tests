@@ -4,7 +4,7 @@ set -e
 
 declare -A input
 
-input[bellman_ford]=bfsBellmanFord
+input[bellman_ford]=bfsBellman
 input[bfs_dijkstra]=bfsDijkstra
 input[byzantine]=byzantine
 input[leader_elect_dp]=leader_elect_dp
