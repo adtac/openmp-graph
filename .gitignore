@@ -28,3 +28,4 @@ vertex_coloring
 *.s
 *.ll
 input
+output
