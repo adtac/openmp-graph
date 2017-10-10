@@ -221,4 +221,6 @@ int main(int argc, char* argv[]) {
     }
 
     print_solution(g);
+
+    return 0;
 }
