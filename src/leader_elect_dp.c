@@ -114,7 +114,7 @@ int verify_and_print_solution(graph* g) {
     if (!disagreement)
         INFO("Correct! All nodes have agreed to have %d as the leader.\n", leader);
 
-    return !disagreement;
+    return disagreement;
 }
 
 /**
