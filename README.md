@@ -45,7 +45,7 @@ the input data. For example, if you wanted to run `dominating_set` on the test
 file `inputdominatingSet_16_-spar_min.txt`, you'll execute the program as:
 
 ```bash
-$ ./dominating_set - ../input/inputdominatingSet_16_-spar_min.txt
+$ ./dominating_set - /path/to/input/inputdominatingSet_16_-spar_min.txt
 ```
 
 ### Logging
