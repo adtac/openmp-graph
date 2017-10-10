@@ -141,8 +141,10 @@ int do_present_nodes_exist(graph* g) {
  * prints the solution.
  *
  * @g: a pointer to the graph object
+ *
+ * Returns 0 if the produced solution is correct. Returns 1 otherwise.
  */
-void verify_and_print_solution(graph* g) {
+int verify_and_print_solution(graph* g) {
     /**
      * Note: there's no `#pragma omp parallel` required here - this is not a
      * part of the solution computation.
@@ -183,6 +185,8 @@ void verify_and_print_solution(graph* g) {
         INFO("MIS solution verified to be correct\n");
     else
         INFO("MIS solution incorrect\n");
+
+    return !correct;
 }
 
 /**
@@ -237,7 +241,5 @@ int main(int argc, char* argv[]) {
 
     // print_graph(g);
 
-    verify_and_print_solution(g);
-
-    return 0;
+    return verify_and_print_solution(g);
 }
