@@ -208,8 +208,10 @@ void legalize_committees(graph* g) {
  *
  * @g: the graph itself
  * @K: the maximum number of elements in a committee
+ *
+ * Returns 0 if the produced partitioning is correct. Returns 1 otherwise.
  */
-void verify_and_print_solution(graph* g, int K) {
+int verify_and_print_solution(graph* g, int K) {
     int correct = 1;
 
     int* committee_count = malloc(g->N * sizeof(int));
@@ -244,6 +246,8 @@ end:
         INFO("Produced solution is correct\n");
     else
         INFO("Produced solution is incorrect\n");
+
+    return !correct;
 }
 
 /**
@@ -308,8 +312,8 @@ int main(int argc, char* argv[]) {
     }
     legalize_committees(g);
 
-    verify_and_print_solution(g, K);
-
     free_queuelist(invite_ql);
     free_queuelist(active_ql);
+
+    return verify_and_print_solution(g, K);
 }
