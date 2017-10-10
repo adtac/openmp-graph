@@ -27,3 +27,4 @@ vertex_coloring
 *.bc
 *.s
 *.ll
+input
