@@ -325,4 +325,6 @@ int main(int argc, char* argv[]) {
 
     free_queuelist(send_ql);
     free_queuelist(recv_ql);
+
+    return 0;
 }
