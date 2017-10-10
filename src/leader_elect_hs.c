@@ -280,17 +280,9 @@ int main(int argc, char* argv[]) {
         generate_send_messages(processes, l, N, send_ql);
 
         while (1) {
-            #if defined(LOG_LEVEL) && LOG_LEVEL > 2
-            debug_display_queuelist(send_ql);
-            #endif
-
             propagate_messages(processes, l, N, send_ql, recv_ql);
 
             int status = check_statuses(processes, N, send_ql);
-
-            #if defined(LOG_LEVEL) && LOG_LEVEL > 2
-            debug_display_queuelist(send_ql);
-            #endif
 
             DEBUG("status = %d\n", status);
 
