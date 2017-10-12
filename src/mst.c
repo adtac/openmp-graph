@@ -318,6 +318,15 @@ void merge_fragments(graph* g, queuelist* mst) {
     }
 }
 
+/**
+ * verify_and_print_solution - Verifies if the produced solution is correct
+ * using Prim's algorithm to compute the minimum spanning tree.
+ *
+ * @g:   the graph
+ * @mst: a queuelist to store a list of edges (in the MST) in
+ *
+ * Returns 0 if everything is correct. Returns 1 otherwise.
+ */
 int verify_and_print_solution(graph* g, queuelist* mst) {
     int computed_weight = 0;
     while (!is_ql_queue_empty(mst, 0)) {
