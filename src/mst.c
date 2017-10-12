@@ -284,6 +284,11 @@ int verify_and_print_solution(graph* g, queuelist* mst) {
     return 0;
 }
 
+/**
+ * Based on Roger Wattenhofer's Principles of Distributed Computing's
+ * Algorithm 2.18 (Gallager-Humblet-Spira) to find the minimum spanning
+ * tree of a weighted graph in a distributed manner.
+ */
 int main(int argc, char* argv[]) {
     int N;
     int M;
