@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <omp.h>
+#include <limits.h>
 
 #include "ompdist/vector.h"
 #include "ompdist/queues.h"
@@ -318,12 +319,64 @@ void merge_fragments(graph* g, queuelist* mst) {
 }
 
 int verify_and_print_solution(graph* g, queuelist* mst) {
+    int computed_weight = 0;
     while (!is_ql_queue_empty(mst, 0)) {
         edge* e = dequeue(mst, 0);
-        INFO("%d, %d, %d\n", e->u, e->v, e->w);
+        computed_weight += e->w;
+        INFO("(%d, %d, %d)\n", e->u, e->v, e->w);
     }
 
-    return 0;
+    int actual_weight = 0;
+
+    int done = 0;
+
+    int* in_mst = malloc(g->N * sizeof(int));
+    int* parent = malloc(g->N * sizeof(int));
+    int* d = malloc(g->N * sizeof(int));
+
+    for (int i = 0; i < g->N; i++) {
+        in_mst[i] = 0;
+        parent[i] = -1;
+        d[i] = 1e9;
+    }
+
+    d[0] = 0;
+
+    while (done < g->N) {
+        done++;
+
+        int min = INT_MAX;
+        int min_idx = 0;
+        for (int i = 0; i < g->N; i++) {
+            if (!in_mst[i] && min > d[i]) {
+                min = d[i];
+                min_idx = i;
+            }
+        }
+
+        node* u = elem_at(&g->vertices, min_idx);
+        in_mst[u->label] = 1;
+
+        for (int i = 0; i < u->degree; i++) {
+            node* v = *((node**) elem_at(&u->neighbors, i));
+            int w = g->adj_mat[u->label][v->label];
+
+            if (in_mst[v->label] == 0 && w < d[v->label]) {
+                d[v->label] = w;
+                parent[v->label] = u->label;
+            }
+        }
+    }
+
+    for (int i = 1; i < g->N; i++)
+        actual_weight += g->adj_mat[i][parent[i]];
+
+    if (actual_weight == computed_weight)
+        INFO("correct! computed tree is the MST\n");
+    else
+        INFO("incorrect: actual_weight=%d, computed_weight=%d\n", actual_weight, computed_weight);
+
+    return computed_weight != actual_weight;
 }
 
 /**
