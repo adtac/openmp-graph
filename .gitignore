@@ -23,6 +23,7 @@ byzantine
 dominating_set
 bellman_ford
 vertex_coloring
+mst
 *.i
 *.bc
 *.s
