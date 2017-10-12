@@ -1,0 +1,336 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <omp.h>
+
+#include "ompdist/vector.h"
+#include "ompdist/queues.h"
+#include "ompdist/graph.h"
+#include "ompdist/graph_gen.h"
+#include "ompdist/utils.h"
+#include "config.h"
+
+typedef struct {
+    int from;
+} message;
+
+typedef struct {
+    int u;
+    int v;
+    int w;
+} edge;
+
+typedef struct {
+    int fragment_id;
+    int tmp_fragment_id;
+    int received_first_message;
+    edge* b;
+} payload;
+
+void initialize_graph(graph* g) {
+    DEBUG("initializing the graph\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = malloc(sizeof(payload));
+        u->data = u_data;
+
+        u_data->fragment_id = u->label;
+        u_data->tmp_fragment_id = u->label;
+        u_data->received_first_message = 0;
+        u_data->b = NULL;
+    }
+}
+
+int multiple_fragments(graph* g) {
+    int multiple = 0;
+    int last = -1;
+
+    DEBUG("checking if there are multiple fragments\n");
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = u->data;
+
+        if (last == -1)
+            last = u_data->fragment_id;
+        else if (u_data->fragment_id != last) {
+            multiple = 1;
+            break;
+        }
+    }
+
+    return multiple;
+}
+
+void change_fragment(graph* g, int from, int to) {
+    DEBUG("changing all nodes with fragment_id=%d to %d\n", from, to);
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = u->data;
+
+        if (u_data->fragment_id == from)
+            u_data->fragment_id = to;
+    }
+}
+
+void find_blue_edges(graph* g, queuelist* msgs, queuelist* tmp_msgs, queuelist* blues) {
+    DEBUG("planting root messages\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = u->data;
+
+        u_data->received_first_message = 0;
+
+        /* Only roots find the blue edge */
+        if (u_data->fragment_id != u->label)
+            continue;
+
+        message m = {-1};
+        enqueue(msgs, u->label, &m);
+    }
+
+    int nodes_yet_to_recv = 1;
+
+    DEBUG("accumulating blue edges\n");
+    while (nodes_yet_to_recv) {
+        DEBUG("propagating the messages across the graph\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
+        for (int i = 0; i < g->N; i++) {
+            node* u = elem_at(&g->vertices, i);
+            payload* u_data = u->data;
+
+            if (u_data->received_first_message)
+                continue;
+
+            while (!is_ql_queue_empty(msgs, u->label)) {
+                u_data->received_first_message = 1;
+                message* m = dequeue(msgs, u->label);
+
+                for (int j = 0; j < u->degree; j++) {
+                    node* v = *((node**) elem_at(&u->neighbors, j));
+                    payload* v_data = v->data;
+
+                    /* Don't send the message back to the source */
+                    if (v->label == m->from)
+                        continue;
+
+                    /**
+                     * If the neighbor is outside the fragment it's a potential
+                     * blue edge. Otherwise it's just a carrier for this message.
+                     */
+                    if (v_data->fragment_id != u_data->fragment_id) {
+                        edge b = {u->label, v->label, g->adj_mat[u->label][v->label]};
+                        enqueue(blues, u_data->fragment_id, &b);
+                    }
+                    else {
+                        message mx = {u->label};
+                        enqueue(tmp_msgs, v->label, &mx);
+                    }
+                }
+            }
+        }
+
+        DEBUG("moving messages from tmp_msgs to msgs\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
+        for (int i = 0; i < g->N; i++) {
+            node* u = elem_at(&g->vertices, i);
+            payload* u_data = u->data;
+
+            while (!is_ql_queue_empty(tmp_msgs, u->label)) {
+                message* m = dequeue(tmp_msgs, u->label);
+                if (!u_data->received_first_message)
+                    enqueue(msgs, u->label, m);
+            }
+        }
+
+        nodes_yet_to_recv = 0;
+
+        DEBUG("checking if there are any more nodes left to process\n");
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
+        for (int i = 0; i < g->N; i++) {
+            node* u = elem_at(&g->vertices, i);
+            payload* u_data = u->data;
+
+            if (!u_data->received_first_message)
+                nodes_yet_to_recv = 1;
+        }
+
+        DEBUG("nodes_yet_to_recv = %d\n", nodes_yet_to_recv);
+    }
+
+    /**
+     * Find the minimum blue edge of all potential blue edge candidates for
+     * each fragment. The actual data still lives on in the `blues` queue and
+     * it won't be lost till the next phase, at which point we don't need it
+     * anyway since all bridges would have happened.
+     */
+    DEBUG("finding the minimum of the accumulated blue edges\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = u->data;
+
+        /* only roots find the blue edge */
+        if (u_data->fragment_id != u->label)
+            continue;
+
+        edge* min_edge = NULL;
+        while (!is_ql_queue_empty(blues, u->label)) {
+            edge* b = dequeue(blues, u->label);
+            if (min_edge == NULL) {
+                min_edge = b;
+                continue;
+            }
+
+            /**
+             * So this might look like some kind of weird logic, but there's a
+             * reason why I'm doing this: say there are two different fragments
+             * with blue edges into each other. If the two blue edges are the
+             * same, it's perfectly fine -- it'll be resolved in the conflicting
+             * blue edges scennario. However, if they're different, they'll
+             * both be added to the MST when it should only be one of them. To
+             * prevent this, we'll simply use the edge that has a smaller value
+             * of (u*N + v). Note that both will have the exact same weight,
+             * so it's fine whichever one we choose.
+             */
+            int b_score = b->u*g->N + b->v;
+            if (b->u > b->v)
+                b_score = b->v*g->N + b->u;
+
+            int min_score = min_edge->u*g->N + min_edge->v;
+            if (min_edge->u > min_edge->v)
+                min_score = min_edge->v*g->N + min_edge->u;
+
+            if ((b->w < min_edge->w) || (b->w == min_edge->w && b_score < min_score))
+                min_edge = b;
+        }
+
+        node* future_leader = elem_at(&g->vertices, min_edge->u);
+        payload* future_leader_data = future_leader->data;
+
+        u_data->b = min_edge;
+        future_leader_data->b = min_edge;
+    }
+
+}
+
+void assign_tmp_fragments(graph* g) {
+    DEBUG("setting tmp_fragment_id\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = u->data;
+
+        node* leader = elem_at(&g->vertices, u_data->fragment_id);
+        payload* leader_data = leader->data;
+
+        u_data->tmp_fragment_id = leader_data->b->u;
+    }
+
+    DEBUG("setting temporary fragment_id\n");
+    #pragma omp parallel for schedule(SCHEDULING_METHOD)
+    for (int i = 0; i < g->N; i++) {
+        node* u = elem_at(&g->vertices, i);
+        payload* u_data = u->data;
+
+        u_data->fragment_id = u_data->tmp_fragment_id;
+    }
+}
+
+void merge_fragments(graph* g, queuelist* mst) {
+    /**
+     * `ok` denotes whether conflicting merges are okay to merge. This is done
+     * so that non-conflicting merge requests are merged first and the conflicting
+     * ones are done so later.
+     */
+    for (int ok = 0; ok < 2; ok++) {
+        DEBUG("conflicts phase: %d\n", ok);
+        #pragma omp parallel for schedule(SCHEDULING_METHOD)
+        for (int i = 0; i < g->N; i++) {
+            node* u = elem_at(&g->vertices, i);
+            payload* u_data = u->data;
+
+            if (u_data->fragment_id != u->label)
+                continue;
+
+            #pragma omp critical
+            {
+                node* v = elem_at(&g->vertices, u_data->b->v);
+                payload* v_data = v->data;
+
+                node* v_leader = elem_at(&g->vertices, v_data->fragment_id);
+                payload* v_leader_data = v_leader->data;
+
+                int conflicting_merges = (u->label == v_leader_data->b->v &&
+                                          v_leader_data->b->u == v->label &&
+                                          u_data->b->v == v->label);
+
+                if (conflicting_merges == ok) {
+                    change_fragment(g, u->label, v_leader->label);
+                    edge m = {u->label, v->label, g->adj_mat[u->label][v->label]};
+                    enqueue(mst, 0, &m);
+                }
+            }
+        }
+    }
+}
+
+int verify_and_print_solution(graph* g, queuelist* mst) {
+    while (!is_ql_queue_empty(mst, 0)) {
+        edge* e = dequeue(mst, 0);
+        INFO("%d, %d, %d\n", e->u, e->v, e->w);
+    }
+
+    return 0;
+}
+
+int main(int argc, char* argv[]) {
+    int N;
+    int M;
+    graph* g;
+
+    if (input_through_argv(argc, argv)) {
+        FILE* in = fopen(argv[2], "r");
+
+        fscanf(in, "%d\n", &N);
+
+        g = new_graph(N, 0);
+        
+        g->M = M = read_graph(g, in);
+
+        fclose(in);
+    }
+    else {
+        N = 16;
+        M = 64;
+
+        if (argc > 1) {
+            sscanf(argv[1], "%d", &N);
+            sscanf(argv[2], "%d", &M);
+        }
+
+        g = generate_new_connected_graph(N, M);
+    }
+
+    initialize_graph(g);
+
+    queuelist* msgs = new_queuelist(g->N, sizeof(message));
+    queuelist* tmp_msgs = new_queuelist(g->N, sizeof(message));
+    queuelist* blues = new_queuelist(g->N, sizeof(edge));
+
+    queuelist* mst = new_queuelist(1, sizeof(edge));
+
+    while (multiple_fragments(g)) {
+        find_blue_edges(g, msgs, tmp_msgs, blues);
+        assign_tmp_fragments(g);
+        merge_fragments(g, mst);
+    }
+
+    free_queuelist(msgs);
+    free_queuelist(tmp_msgs);
+    free_queuelist(blues);
+
+    int result = verify_and_print_solution(g, mst);
+    free_queuelist(mst);
+    return result;
+}
