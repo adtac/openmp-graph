@@ -26,6 +26,11 @@ typedef struct {
     edge* b;
 } payload;
 
+/**
+ * initialize_graph: Initializes the graph.
+ *
+ * @g: the graph
+ */
 void initialize_graph(graph* g) {
     DEBUG("initializing the graph\n");
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
@@ -41,6 +46,14 @@ void initialize_graph(graph* g) {
     }
 }
 
+/**
+ * multiple_fragments - Checks if there are multiple fragments in the graph.
+ *
+ * @g: the graph
+ *
+ * Returns 1 if there are mutiple fragments. Returns 0 if there's just one
+ * fragment (indicating that our algorithm has comepleted).
+ */
 int multiple_fragments(graph* g) {
     int multiple = 0;
     int last = -1;
@@ -61,6 +74,13 @@ int multiple_fragments(graph* g) {
     return multiple;
 }
 
+/**
+ * change_fragment - Changes all the nodes in a fragment to another fragment.
+ *
+ * @g:    the graph
+ * @from: the source fragment ID
+ * @to:   the destination fragment ID
+ */
 void change_fragment(graph* g, int from, int to) {
     DEBUG("changing all nodes with fragment_id=%d to %d\n", from, to);
     for (int i = 0; i < g->N; i++) {
@@ -72,6 +92,14 @@ void change_fragment(graph* g, int from, int to) {
     }
 }
 
+/**
+ * find_blue_edges - Finds the blue edge of each fragment using flooding-echo.
+ *
+ * @g:        the graph
+ * @msgs:     each node's messages
+ * @tmp_msgs: temporary queuelist holder for each node's messages
+ * @blues:    queuelist of potential blue edges for each node
+ */
 void find_blue_edges(graph* g, queuelist* msgs, queuelist* tmp_msgs, queuelist* blues) {
     DEBUG("planting root messages\n");
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
@@ -214,6 +242,12 @@ void find_blue_edges(graph* g, queuelist* msgs, queuelist* tmp_msgs, queuelist* 
 
 }
 
+/**
+ * assign_tmp_fragments - Temporarily sets the fragment ID of each element in
+ * a fragment to that of the element in the blue edge.
+ *
+ * @g: the graph
+ */
 void assign_tmp_fragments(graph* g) {
     DEBUG("setting tmp_fragment_id\n");
     #pragma omp parallel for schedule(SCHEDULING_METHOD)
@@ -237,6 +271,14 @@ void assign_tmp_fragments(graph* g) {
     }
 }
 
+/**
+ * merge_fragments - Merges the fragments by merging the non-conflicting (merge
+ * requests (u, v, w) such that there's no merge request (v, u, w)) followed
+ * by conflicting ones.
+ *
+ * @g:   the graph
+ * @mst: a queuelist to store a list of edges (in the MST) in
+ */
 void merge_fragments(graph* g, queuelist* mst) {
     /**
      * `ok` denotes whether conflicting merges are okay to merge. This is done
