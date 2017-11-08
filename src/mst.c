@@ -328,14 +328,14 @@ void merge_fragments(graph* g, queuelist* mst) {
  * Returns 0 if everything is correct. Returns 1 otherwise.
  */
 int verify_and_print_solution(graph* g, queuelist* mst) {
-    int computed_weight = 0;
+    long long int computed_weight = 0;
     while (!is_ql_queue_empty(mst, 0)) {
         edge* e = dequeue(mst, 0);
         computed_weight += e->w;
         INFO("(%d, %d, %d)\n", e->u, e->v, e->w);
     }
 
-    int actual_weight = 0;
+    long long int actual_weight = 0;
 
     int done = 0;
 
@@ -383,7 +383,7 @@ int verify_and_print_solution(graph* g, queuelist* mst) {
     if (actual_weight == computed_weight)
         INFO("correct! computed tree is the MST\n");
     else
-        INFO("incorrect: actual_weight=%d, computed_weight=%d\n", actual_weight, computed_weight);
+        INFO("incorrect: actual_weight=%lld, computed_weight=%lld\n", actual_weight, computed_weight);
 
     return computed_weight != actual_weight;
 }
