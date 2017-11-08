@@ -65,6 +65,21 @@ int read_graph(graph* g, FILE* in) {
     return M/2;
 }
 
+void read_weights(graph* g, FILE* in) {
+    for (int i = 0; i < g->N; i++) {
+        for (int j = 0; j < g->N; j++) {
+            int x;
+            fscanf(in, "%d", &x);
+
+            if (i == j)
+                continue;
+
+            if (g->adj_mat[j][i])
+                g->adj_mat[i][j] = x;
+        }
+    }
+}
+
 void print_graph(graph*g) {
     printf("    ");
     for (int i = 0; i < g->N; i++)
@@ -97,6 +112,10 @@ void add_edge(graph* g, int i, int j) {
 
     node_u->degree++;
     node_v->degree++;
+
+    // temporarily set the weight to 1 to signal that there's an edge
+    // here and that this number must be filled in later on
+    g->adj_mat[i][j] = g->adj_mat[j][i] = 1;
 }
 
 /**

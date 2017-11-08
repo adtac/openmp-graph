@@ -34,6 +34,8 @@ graph* new_graph();
 
 int read_graph(graph*, FILE*);
 
+void read_weights(graph*, FILE*);
+
 void print_graph(graph*);
 
 void add_edge(graph*, int, int);

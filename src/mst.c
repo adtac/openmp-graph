@@ -406,6 +406,7 @@ int main(int argc, char* argv[]) {
         g = new_graph(N, 0);
         
         g->M = M = read_graph(g, in);
+        read_weights(g, in);
 
         fclose(in);
     }
