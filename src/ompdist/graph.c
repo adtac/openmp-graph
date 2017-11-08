@@ -40,6 +40,15 @@ graph* new_graph(int N, int M) {
     return g;
 }
 
+/**
+ * read_graph - Reads a graph from the input file. This must follow the IMSuite
+ * input file format.
+ *
+ * @g:  the graph
+ * @in: a FILE* handle to the input file
+ *
+ * Returns the number of edges in the graph.
+ */
 int read_graph(graph* g, FILE* in) {
     int M = 0;
 
@@ -65,6 +74,14 @@ int read_graph(graph* g, FILE* in) {
     return M/2;
 }
 
+/**
+ * read_weights - Reads the weight of each edge from the input file. This must
+ * follow the IMSuite input file format.
+ *
+ * @g:  the graph
+ * @in: a FILE* handle to the input file; this must have its seek position at
+ *      the start of the weight list
+ */
 void read_weights(graph* g, FILE* in) {
     for (int i = 0; i < g->N; i++) {
         for (int j = 0; j < g->N; j++) {
@@ -80,6 +97,11 @@ void read_weights(graph* g, FILE* in) {
     }
 }
 
+/**
+ * print_graph - Prints the graph to stdout.
+ *
+ * @g: the graph
+ */
 void print_graph(graph*g) {
     printf("    ");
     for (int i = 0; i < g->N; i++)
