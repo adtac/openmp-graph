@@ -357,7 +357,7 @@ int verify_and_print_solution(graph* g, queuelist* mst) {
         int min = INT_MAX;
         int min_idx = 0;
         for (int i = 0; i < g->N; i++) {
-            if (!in_mst[i] && min > d[i]) {
+            if (!in_mst[i] && min >= d[i]) {
                 min = d[i];
                 min_idx = i;
             }
