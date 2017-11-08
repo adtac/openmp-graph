@@ -58,6 +58,13 @@ void free_queuelist(queuelist* ql) {
     free(ql);
 }
 
+/**
+ * enqueue - Enqueues an object in the i-th queue of a queuelist.
+ *
+ * @ql:     a queuelist
+ * @i:      denotes the i-th queue to enqueue into
+ * @object: a pointer to the object to enqueue
+ */
 void enqueue(queuelist* ql, int i, void* object) {
     omp_set_lock(ql->locks + i);
 
@@ -66,6 +73,15 @@ void enqueue(queuelist* ql, int i, void* object) {
     omp_unset_lock(ql->locks + i);
 }
 
+/**
+ * dequeue - Dequeues and returns the front-most element in a queuelist.
+ *
+ * @ql: a queuelist
+ * @i:  denotes the i-th queue to dequeue from
+ *
+ * Returns a pointer to the front-most object. This pointer will be alive as
+ * long as the queuelist lives.
+ */
 void* dequeue(queuelist* ql, int i) {
     omp_set_lock(ql->locks + i);
 
@@ -100,6 +116,15 @@ end:
     return object;
 }
 
+/**
+ * is_ql_queue_empty - Checks if a particular queue in a queuelist is empty.
+ *
+ * @ql: a queuelist
+ * @i:  denotes the i-th queue to check
+ *
+ * Returns 1 if the queue is empty. Returns 0 if there is at least one element
+ * in the i-th queue of the queuelist.
+ */
 int is_ql_queue_empty(queuelist* ql, int i) {
     omp_set_lock(ql->locks + i);
 
