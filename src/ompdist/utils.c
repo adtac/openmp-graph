@@ -8,6 +8,16 @@ void swap(int* a, int* b) {
     *b = t;
 }
 
+/**
+ * input_through_argv - Checks if the input is to be generated or read in from
+ * an input file.
+ *
+ * @argc: the number of input arguments
+ * @argv: the list of input arguments
+ *
+ * Returns 0 if the input is to be generated. Returns 1 if the input is to be
+ * read in from a file.
+ */
 int input_through_argv(int argc, char* argv[]) {
     if (argc < 3)
         return 0;
