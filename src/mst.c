@@ -346,7 +346,7 @@ int verify_and_print_solution(graph* g, queuelist* mst) {
     for (int i = 0; i < g->N; i++) {
         in_mst[i] = 0;
         parent[i] = -1;
-        d[i] = 1e9;
+        d[i] = INT_MAX;
     }
 
     d[0] = 0;
