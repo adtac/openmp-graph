@@ -262,7 +262,10 @@ int main(int argc, char* argv[]) {
     int* kvals;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -279,6 +282,8 @@ int main(int argc, char* argv[]) {
             fscanf(in, "%d", &kvals[i]);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -298,21 +303,36 @@ int main(int argc, char* argv[]) {
             kvals[i] = i;
     }
 
-    initialize_graph(g, kvals);
+    long long duration = 0;
+    int verification;
+
+    for (int i = 0; i < iterations; i++) {
+        queuelist* active_ql = new_queuelist(N, sizeof(int));
+        queuelist* invite_ql = new_queuelist(N, sizeof(invitation));
+
+        begin_timer();
+
+        initialize_graph(g, kvals);
+
+        for (int k = 0; k < K; k++) {
+            DEBUG("phase k = %d\n", k);
+            do_polling(g, K, active_ql);
+            do_selection(g, K, invite_ql);
+        }
+        legalize_committees(g);
+
+        duration += time_elapsed();
+
+        verification = verify_and_print_solution(g, K);
+
+        free_queuelist(invite_ql);
+        free_queuelist(active_ql);
+    }
+
     free(kvals);
 
-    queuelist* active_ql = new_queuelist(N, sizeof(int));
-    queuelist* invite_ql = new_queuelist(N, sizeof(invitation));
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
-    for (int k = 0; k < K; k++) {
-        DEBUG("phase k = %d\n", k);
-        do_polling(g, K, active_ql);
-        do_selection(g, K, invite_ql);
-    }
-    legalize_committees(g);
-
-    free_queuelist(invite_ql);
-    free_queuelist(active_ql);
-
-    return verify_and_print_solution(g, K);
+    return verification;
 }
