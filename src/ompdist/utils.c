@@ -1,4 +1,5 @@
 #include <string.h>
+#include <time.h>
 
 #include "utils.h"
 
@@ -16,14 +17,36 @@ void swap(int* a, int* b) {
  * @argv: the list of input arguments
  *
  * Returns 0 if the input is to be generated. Returns 1 if the input is to be
- * read in from a file.
+ * read in from a file and run once. Returns 2 if the input is to be executed
+ * multiple times with the average time printed to screen.
  */
 int input_through_argv(int argc, char* argv[]) {
     if (argc < 3)
         return 0;
 
-    if (strcmp(argv[1], "-") == 0)
+    if (argc == 3 && strcmp(argv[1], "-") == 0)
         return 1;
 
+    if (argc == 4 && strcmp(argv[1], "+") == 0)
+        return 2;
+
     return 0;
+}
+
+/**
+ * begin_timer - Starts a nanosecond precise timer.
+ */
+void begin_timer() {
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_time);
+}
+
+/**
+ * time_elapsed - Returns the number of nanoseconds elapsed since the begin_timer.
+ *
+ * Returns a long long of nanoseconds elapsed.
+ */
+long long time_elapsed() {
+    struct timespec end_time;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_time);
+    return (long long) (end_time.tv_sec - start_time.tv_sec) * (long)1e9 + (end_time.tv_nsec - start_time.tv_nsec);
 }

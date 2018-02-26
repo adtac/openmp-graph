@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <libgen.h>
+#include <time.h>
 
 #include "../config.h"
 
@@ -39,5 +40,9 @@
 void swap(int*, int*);
 
 int input_through_argv(int, char**);
+
+struct timespec start_time;
+void begin_timer();
+long long time_elapsed();
 
 #endif // _UTILS_H_
