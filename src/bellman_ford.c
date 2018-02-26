@@ -182,7 +182,10 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate = 0;
+    int iterations;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -193,6 +196,8 @@ int main(int argc, char* argv[]) {
         g->M = M = read_graph(g, in);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -208,19 +213,29 @@ int main(int argc, char* argv[]) {
         ROOT = 0;
     }
 
-    initialize_graph(g);
+    long long duration = 0;
 
-    queuelist* recv = new_queuelist(N, sizeof(message));
-    queuelist* send = new_queuelist(N, sizeof(message));
+    for (int i = 0; i < iterations; i++) {
+        queuelist* recv = new_queuelist(N, sizeof(message));
+        queuelist* send = new_queuelist(N, sizeof(message));
 
-    root_message(g, recv);
+        begin_timer();
 
-    while (messages_in_queue(g->N, recv)) {
-        recv_and_send(g, recv, send);
-        propagate_messages(g, recv, send);
+        initialize_graph(g);
+
+        root_message(g, recv);
+        while (messages_in_queue(g->N, recv)) {
+            recv_and_send(g, recv, send);
+            propagate_messages(g, recv, send);
+        }
+
+        duration += time_elapsed();
+
+        // print_solution(g);
     }
 
-    print_solution(g);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
     return 0;
 }
