@@ -233,7 +233,10 @@ int main(int argc, char* argv[]) {
     int N;
     process* processes;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d", &N);
@@ -245,6 +248,8 @@ int main(int argc, char* argv[]) {
             fscanf(in, "%d", &x);
             processes[i].id = processes[i].leader = processes[i].send = x;
         }
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -255,68 +260,80 @@ int main(int argc, char* argv[]) {
         processes = generate_nodes(N);
     }
 
-    /**
-     * We need two different queue lists for the following reason. Say there
-     * are two nodes A and B. For the sake of argument, say B has no messages
-     * to pass on. B will immediately exit its loop. Say A wants to enqueue
-     * a message into B's queue. Since B is already done, it'll never see this
-     * message. To avoid this, we have two queues - messages will be picked
-     * up from the send_ql, processed and added to the destination's recv_ql.
-     * Then, after all threads complete, messages are copied from recv_ql
-     * and simply copied to send_ql.
-     */
-    queuelist* recv_ql = new_queuelist(N, sizeof(message));
-    queuelist* send_ql = new_queuelist(N, sizeof(message));
+    long long duration = 0;
+    int verification;
 
-    int chosen_id = -1;
+    for (int i = 0; i < iterations; i++) {
+        /**
+         * We need two different queue lists for the following reason. Say there
+         * are two nodes A and B. For the sake of argument, say B has no messages
+         * to pass on. B will immediately exit its loop. Say A wants to enqueue
+         * a message into B's queue. Since B is already done, it'll never see this
+         * message. To avoid this, we have two queues - messages will be picked
+         * up from the send_ql, processed and added to the destination's recv_ql.
+         * Then, after all threads complete, messages are copied from recv_ql
+         * and simply copied to send_ql.
+         */
+        queuelist* recv_ql = new_queuelist(N, sizeof(message));
+        queuelist* send_ql = new_queuelist(N, sizeof(message));
 
-    int l = 0;
+        begin_timer();
 
-    int finished = 0;
-    while (!finished) {
-        l += 1;
-        DEBUG("starting phase %d\n", l);
+        int chosen_id = -1;
 
-        generate_send_messages(processes, l, N, send_ql);
+        int l = 0;
 
-        while (1) {
-            propagate_messages(processes, l, N, send_ql, recv_ql);
+        int finished = 0;
+        while (!finished) {
+            l += 1;
+            DEBUG("starting phase %d\n", l);
 
-            int status = check_statuses(processes, N, send_ql);
+            generate_send_messages(processes, l, N, send_ql);
 
-            DEBUG("status = %d\n", status);
+            while (1) {
+                propagate_messages(processes, l, N, send_ql, recv_ql);
 
-            /**
-             * Not all messages have propagated fully. Keep going.
-             */
-            if (status == 1)
-                continue;
+                int status = check_statuses(processes, N, send_ql);
 
-            /**
-             * All messages were processed, but there's no clear leader. Go
-             * for another phase.
-             */
-            if (status == 2)
-                break;
+                DEBUG("status = %d\n", status);
 
-            /**
-             * A leader has been chosen! Make sure everybody knows this
-             * and exit.
-             */
-            if (status <= 0) {
-                chosen_id = -status;
-                set_leader(processes, N, chosen_id);
-                finished = 1;
-                break;
+                /**
+                 * Not all messages have propagated fully. Keep going.
+                 */
+                if (status == 1)
+                    continue;
+
+                /**
+                 * All messages were processed, but there's no clear leader. Go
+                 * for another phase.
+                 */
+                if (status == 2)
+                    break;
+
+                /**
+                 * A leader has been chosen! Make sure everybody knows this
+                 * and exit.
+                 */
+                if (status <= 0) {
+                    chosen_id = -status;
+                    set_leader(processes, N, chosen_id);
+                    finished = 1;
+                    break;
+                }
             }
         }
+
+        duration += time_elapsed();
+
+        INFO("chosen leader: %d\n", chosen_id);
+        INFO("number of phases: %d\n", l);
+
+        free_queuelist(send_ql);
+        free_queuelist(recv_ql);
     }
 
-    INFO("chosen leader: %d\n", chosen_id);
-    INFO("number of phases: %d\n", l);
-
-    free_queuelist(send_ql);
-    free_queuelist(recv_ql);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
     return 0;
 }
