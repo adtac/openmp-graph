@@ -182,8 +182,8 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    int iterate = 0;
-    int iterations;
+    int iterate;
+    int iterations = 1;
 
     if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
