@@ -219,7 +219,10 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -230,6 +233,8 @@ int main(int argc, char* argv[]) {
         g->M = M = read_graph(g, in);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -239,18 +244,29 @@ int main(int argc, char* argv[]) {
         M = N-1;
 
         ROOT = 0;
-
         g = generate_new_tree(N);
     }
 
     int digits = num_digits(g);
     DEBUG("digits = %d\n", digits);
 
-    initialize_graph(g);
+    int verification;
+    long long duration = 0;
+    for (int i = 0; i < iterations; i++) {
+        begin_timer();
 
-    do {
-        six_color_tree(g, digits);
-    } while (again(g));
+        initialize_graph(g);
+        do {
+            six_color_tree(g, digits);
+        } while (again(g));
 
-    return verify_and_print_solution(g);
+        duration += time_elapsed();
+
+        verification = verify_and_print_solution(g);
+    }
+
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+
+    return verification;
 }
