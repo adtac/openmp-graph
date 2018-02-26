@@ -448,7 +448,10 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -458,6 +461,8 @@ int main(int argc, char* argv[]) {
         g->M = M = read_graph(g, in);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -471,20 +476,30 @@ int main(int argc, char* argv[]) {
         g = generate_new_connected_graph(N, M);
     }
 
-    initialize_graph(g);
+    long long duration = 0;
+    int verification;
+    for (int i = 0; i < iterations; i++) {
+        begin_timer();
+        initialize_graph(g);
+        while (unjoined_nodes_exist(g)) {
+            compute_w(g);
+            compute_w_tilde(g);
+            compute_w_hat(g);
+            compute_active(g);
+            compute_s(g);
+            compute_s_hat(g);
+            compute_candidacy(g);
+            compute_c(g);
+            compute_join(g);
+            colorize(g);
+        }
+        duration += time_elapsed();
 
-    while (unjoined_nodes_exist(g)) {
-        compute_w(g);
-        compute_w_tilde(g);
-        compute_w_hat(g);
-        compute_active(g);
-        compute_s(g);
-        compute_s_hat(g);
-        compute_candidacy(g);
-        compute_c(g);
-        compute_join(g);
-        colorize(g);
+        verification = verify_and_print_solution(g);
     }
 
-    return verify_and_print_solution(g);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+
+    return verification;
 }
