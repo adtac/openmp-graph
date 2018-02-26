@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <omp.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ompdist/election.h"
 #include "ompdist/vector.h"
@@ -264,6 +265,10 @@ int main(int argc, char* argv[]) {
     int verification;
 
     for (int i = 0; i < iterations; i++) {
+        process* ps = generate_nodes(N);
+
+        memcpy(ps, processes, sizeof(process)*N);
+
         /**
          * We need two different queue lists for the following reason. Say there
          * are two nodes A and B. For the sake of argument, say B has no messages
@@ -288,12 +293,12 @@ int main(int argc, char* argv[]) {
             l += 1;
             DEBUG("starting phase %d\n", l);
 
-            generate_send_messages(processes, l, N, send_ql);
+            generate_send_messages(ps, l, N, send_ql);
 
             while (1) {
-                propagate_messages(processes, l, N, send_ql, recv_ql);
+                propagate_messages(ps, l, N, send_ql, recv_ql);
 
-                int status = check_statuses(processes, N, send_ql);
+                int status = check_statuses(ps, N, send_ql);
 
                 DEBUG("status = %d\n", status);
 
@@ -316,7 +321,7 @@ int main(int argc, char* argv[]) {
                  */
                 if (status <= 0) {
                     chosen_id = -status;
-                    set_leader(processes, N, chosen_id);
+                    set_leader(ps, N, chosen_id);
                     finished = 1;
                     break;
                 }
@@ -330,6 +335,7 @@ int main(int argc, char* argv[]) {
 
         free_queuelist(send_ql);
         free_queuelist(recv_ql);
+        free(ps);
     }
 
     if (iterate)
