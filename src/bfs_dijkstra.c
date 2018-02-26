@@ -115,7 +115,10 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -126,6 +129,8 @@ int main(int argc, char* argv[]) {
         g->M = M = read_graph(g, in);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -141,17 +146,27 @@ int main(int argc, char* argv[]) {
         ROOT = 0;
     }
 
-    initialize_graph(g);
+    long long duration = 0;
 
-    int p = 0;
+    for (int i = 0; i < iterations; i++) {
+        begin_timer();
 
-    int nobody_was_discovered = 0;
-    while (!nobody_was_discovered) {
-        nobody_was_discovered = broadcast_start(g, p);
-        p++;
+        int p = 0;
+        int nobody_was_discovered = 0;
+
+        initialize_graph(g);
+        while (!nobody_was_discovered) {
+            nobody_was_discovered = broadcast_start(g, p);
+            p++;
+        }
+
+        duration += time_elapsed();
+
+        // print_solution(g);
     }
 
-    print_solution(g);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
     return 0;
 }
