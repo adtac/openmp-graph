@@ -398,7 +398,10 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -409,6 +412,8 @@ int main(int argc, char* argv[]) {
         read_weights(g, in);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -422,25 +427,38 @@ int main(int argc, char* argv[]) {
         g = generate_new_connected_graph(N, M);
     }
 
-    initialize_graph(g);
+    long long duration = 0;
+    int verification;
 
-    queuelist* msgs = new_queuelist(g->N, sizeof(message));
-    queuelist* tmp_msgs = new_queuelist(g->N, sizeof(message));
-    queuelist* blues = new_queuelist(g->N, sizeof(edge));
+    for (int i = 0; i < iterations; i++) {
+        queuelist* msgs = new_queuelist(g->N, sizeof(message));
+        queuelist* tmp_msgs = new_queuelist(g->N, sizeof(message));
+        queuelist* blues = new_queuelist(g->N, sizeof(edge));
 
-    queuelist* mst = new_queuelist(1, sizeof(edge));
+        queuelist* mst = new_queuelist(1, sizeof(edge));
 
-    while (multiple_fragments(g)) {
-        find_blue_edges(g, msgs, tmp_msgs, blues);
-        assign_tmp_fragments(g);
-        merge_fragments(g, mst);
+        begin_timer();
+
+        initialize_graph(g);
+
+        while (multiple_fragments(g)) {
+            find_blue_edges(g, msgs, tmp_msgs, blues);
+            assign_tmp_fragments(g);
+            merge_fragments(g, mst);
+        }
+
+        duration += time_elapsed();
+
+        free_queuelist(msgs);
+        free_queuelist(tmp_msgs);
+        free_queuelist(blues);
+
+        verification = verify_and_print_solution(g, mst);
+        free_queuelist(mst);
     }
 
-    free_queuelist(msgs);
-    free_queuelist(tmp_msgs);
-    free_queuelist(blues);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
-    int result = verify_and_print_solution(g, mst);
-    free_queuelist(mst);
-    return result;
+    return verification;
 }
