@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <omp.h>
+#include <string.h>
 
 #include "ompdist/election.h"
 #include "ompdist/utils.h"
@@ -78,7 +79,10 @@ int main(int argc, char* argv[]) {
     int N;
     process* processes;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d", &N);
@@ -90,6 +94,8 @@ int main(int argc, char* argv[]) {
             fscanf(in, "%d", &x);
             processes[i].id = processes[i].leader = processes[i].send = x;
         }
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -100,19 +106,39 @@ int main(int argc, char* argv[]) {
         processes = generate_nodes(N);
     }
 
-    for (int i = 0; i < N; i++) {
-        receive_leaders(processes, N);
-        determine_leaders(processes, N);
+    long long duration = 0;
+    int verification;
+
+    for (int i = 0; i < iterations; i++) {
+        process* ps = generate_nodes(N);
+
+        memcpy(ps, processes, sizeof(process)*N);
+
+        begin_timer();
+        for (int r = 0; r < N; r++) {
+            receive_leaders(ps, N);
+            determine_leaders(ps, N);
+        }
+
+        int chosen_id = identify_leader(ps, N);
+        if (chosen_id == -1) {
+            INFO("Incorrect: no solution found.\n");
+            verification = 1;
+            break;
+        }
+
+        set_leader(ps, N, chosen_id);
+
+        INFO("Chosen leader: %d\n", chosen_id);
+
+        duration += time_elapsed();
+
+        free(ps);
+        verification = 0;
     }
 
-    int chosen_id = identify_leader(processes, N);
-    if (chosen_id == -1) {
-        INFO("Incorrect: no solution found.\n");
-        return 1;
-    }
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
-    set_leader(processes, N, chosen_id);
-    INFO("Chosen leader: %d\n", chosen_id);
-
-    return 0;
+    return verification;
 }
