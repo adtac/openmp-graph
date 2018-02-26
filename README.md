@@ -43,10 +43,11 @@ code to know the exact specifications.
 Alternatively, you can provide an input file. This file needs to adhere to the
 particular format used in IMSuite. It will be automatically parsed and used as
 the input data. For example, if you wanted to run `dominating_set` on the test
-file `inputdominatingSet_16_-spar_min.txt`, you'll execute the program as:
+file `inputdominatingSet_16_-spar_min.txt`, you'll execute the program and
+measure the average time per execution over 10000 iterations as:
 
 ```bash
-$ ./dominating_set - /path/to/input/inputdominatingSet_16_-spar_min.txt
+$ ./dominating_set - /path/to/input/inputdominatingSet_16_-spar_min.txt 10000
 ```
 
 ### Running the benchmarking tool
