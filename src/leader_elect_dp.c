@@ -127,7 +127,10 @@ int main(int argc, char* argv[]) {
     int* xvals;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -141,6 +144,8 @@ int main(int argc, char* argv[]) {
             fscanf(in, "%d", &xvals[i]);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -158,22 +163,36 @@ int main(int argc, char* argv[]) {
             xvals[i] = i;
     }
 
-    initialize_graph(g, xvals);
-    free(xvals);
+    long long duration = 0;
+    int verification;
 
-    int something_changed = 1;
-    int num_rounds = 0;
-    while (something_changed) {
-        calculate_temporary_x(g);
+    for (int i = 0; i < iterations; i++) {
+        begin_timer();
 
-        something_changed = propagate_temporary_x(g);
+        int something_changed = 1;
+        int num_rounds = 0;
 
-        num_rounds++;
+        initialize_graph(g, xvals);
+
+        while (something_changed) {
+            calculate_temporary_x(g);
+
+            something_changed = propagate_temporary_x(g);
+
+            num_rounds++;
+        }
+
+        duration += time_elapsed();
+
+        verification = verify_and_print_solution(g);
+
+        // print_graph(g);
     }
 
-    INFO("%d rounds elapsed\n", num_rounds);
+    free(xvals);
 
-    // print_graph(g);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
-    return verify_and_print_solution(g);
+    return verification;
 }
