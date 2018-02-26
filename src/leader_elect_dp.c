@@ -187,6 +187,11 @@ int main(int argc, char* argv[]) {
         verification = verify_and_print_solution(g);
 
         // print_graph(g);
+
+        for (int v = 0; v < g->N; v++) {
+            node* cur = elem_at(&g->vertices, v);
+            free(cur->data);
+        }
     }
 
     free(xvals);
