@@ -11,4 +11,14 @@
  */
 #define SCHEDULING_METHOD dynamic
 
+/*
+ * LOG_LEVEL - Determines what goes into the screen and what doesn't.
+ *
+ * 0 - Suppress all non-essential output.
+ * 1 - Display only warnings.
+ * 2 - Display only warnings and information.
+ * 3 - Display everything: warnings, information, and debug statements
+ */
+#define LOG_LEVEL 0
+
 #endif
