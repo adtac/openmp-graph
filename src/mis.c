@@ -201,7 +201,10 @@ int main(int argc, char* argv[]) {
     int M;
     graph* g;
 
-    if (input_through_argv(argc, argv)) {
+    int iterate;
+    int iterations = 1;
+
+    if ((iterate = input_through_argv(argc, argv))) {
         FILE* in = fopen(argv[2], "r");
 
         fscanf(in, "%d\n", &N);
@@ -210,6 +213,8 @@ int main(int argc, char* argv[]) {
         g->M = M = read_graph(g, in);
 
         fclose(in);
+
+        sscanf(argv[3], "%d", &iterations);
     }
     else {
         N = 16;
@@ -221,25 +226,35 @@ int main(int argc, char* argv[]) {
         }
 
         g = generate_new_connected_graph(N, M);
+
+        iterate = 0;
     }
 
-    initialize_graph(g);
+    long long duration = 0;
+    int verification;
 
-    int keep_going = 1;
+    for (int i = 0; i < iterations; i++) {
+        begin_timer();
 
-    while (keep_going) {
-        keep_going = 0;
+        int keep_going = 1;
 
-        generate_random_field(g);
+        initialize_graph(g);
 
-        decide_mis_entry(g);
+        while (keep_going) {
+            keep_going = 0;
+            generate_random_field(g);
+            decide_mis_entry(g);
+            remove_mis_adjacent_nodes(g);
+            keep_going = do_present_nodes_exist(g);
+        }
 
-        remove_mis_adjacent_nodes(g);
+        duration += time_elapsed();
 
-        keep_going = do_present_nodes_exist(g);
+        verification = verify_and_print_solution(g);
     }
 
-    // print_graph(g);
+    if (iterate)
+        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
 
-    return verify_and_print_solution(g);
+    return verification;
 }
