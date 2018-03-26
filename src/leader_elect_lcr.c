@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <omp.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "ompdist/election.h"
 #include "ompdist/utils.h"
