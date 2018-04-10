@@ -45,5 +45,8 @@ void begin_timer() {
 long long time_elapsed() {
     struct timespec end_time;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_time);
-    return (long long) (end_time.tv_sec - start_time.tv_sec) * (long)1e9 + (end_time.tv_nsec - start_time.tv_nsec);
+    
+    long long int s = end_time.tv_sec - start_time.tv_sec;
+    long long int ns = end_time.tv_nsec - start_time.tv_nsec;
+    return (s * ((long long) 1e9)) + ns;
 }
