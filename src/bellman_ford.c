@@ -8,6 +8,7 @@
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
 #include "ompdist/utils.h"
+#include "ompdist/msr.h"
 #include "config.h"
 
 #define INF INT_MAX
@@ -214,12 +215,14 @@ int main(int argc, char* argv[]) {
     }
 
     long long duration = 0;
+    double total_energy = 0;
 
     for (int i = 0; i < iterations; i++) {
         queuelist* recv = new_queuelist(N, sizeof(message));
         queuelist* send = new_queuelist(N, sizeof(message));
 
         begin_timer();
+        init_energy_measure();
 
         initialize_graph(g);
 
@@ -229,13 +232,14 @@ int main(int argc, char* argv[]) {
             propagate_messages(g, recv, send);
         }
 
+        total_energy += total_energy_used();
         duration += time_elapsed();
 
         // print_solution(g);
     }
 
     if (iterate)
-        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+        printf("%.2lf %.2lf\n", ((double) duration) / iterations, total_energy / iterations);
 
     return 0;
 }
