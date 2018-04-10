@@ -5,7 +5,7 @@
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
 #include "ompdist/utils.h"
-
+#include "ompdist/msr.h"
 #include "config.h"
 
 typedef struct {
@@ -231,10 +231,13 @@ int main(int argc, char* argv[]) {
     }
 
     long long duration = 0;
+    double total_energy = 0;
+
     int verification;
 
     for (int i = 0; i < iterations; i++) {
         begin_timer();
+        init_energy_measure();
 
         int keep_going = 1;
 
@@ -248,13 +251,14 @@ int main(int argc, char* argv[]) {
             keep_going = do_present_nodes_exist(g);
         }
 
+        total_energy += total_energy_used();
         duration += time_elapsed();
 
         verification = verify_and_print_solution(g);
     }
 
     if (iterate)
-        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+        printf("%.2lf %.2lf\n", ((double) duration) / iterations, total_energy / iterations);
 
     return verification;
 }
