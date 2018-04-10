@@ -8,6 +8,7 @@
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
 #include "ompdist/utils.h"
+#include "ompdist/msr.h"
 #include "config.h"
 
 typedef struct {
@@ -428,6 +429,8 @@ int main(int argc, char* argv[]) {
     }
 
     long long duration = 0;
+    double total_energy = 0;
+
     int verification;
 
     for (int i = 0; i < iterations; i++) {
@@ -438,6 +441,7 @@ int main(int argc, char* argv[]) {
         queuelist* mst = new_queuelist(1, sizeof(edge));
 
         begin_timer();
+        init_energy_measure();
 
         initialize_graph(g);
 
@@ -447,6 +451,7 @@ int main(int argc, char* argv[]) {
             merge_fragments(g, mst);
         }
 
+        total_energy += total_energy_used();
         duration += time_elapsed();
 
         free_queuelist(msgs);
@@ -458,7 +463,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (iterate)
-        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+        printf("%.2lf %.2lf\n", ((double) duration) / iterations, total_energy / iterations);
 
     return verification;
 }
