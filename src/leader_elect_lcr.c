@@ -5,7 +5,7 @@
 
 #include "ompdist/election.h"
 #include "ompdist/utils.h"
-
+#include "ompdist/msr.h"
 #include "config.h"
 
 /**
@@ -108,6 +108,8 @@ int main(int argc, char* argv[]) {
     }
 
     long long duration = 0;
+    double total_energy = 0;
+
     int verification;
 
     for (int i = 0; i < iterations; i++) {
@@ -116,6 +118,8 @@ int main(int argc, char* argv[]) {
         memcpy(ps, processes, sizeof(process)*N);
 
         begin_timer();
+        init_energy_measure();
+
         for (int r = 0; r < N; r++) {
             receive_leaders(ps, N);
             determine_leaders(ps, N);
@@ -132,6 +136,7 @@ int main(int argc, char* argv[]) {
 
         INFO("Chosen leader: %d\n", chosen_id);
 
+        total_energy += total_energy_used();
         duration += time_elapsed();
 
         free(ps);
@@ -139,7 +144,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (iterate)
-        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+        printf("%.2lf %.2lf\n", ((double) duration) / iterations, total_energy / iterations);
 
     return verification;
 }
