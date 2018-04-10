@@ -7,7 +7,7 @@
 #include "ompdist/graph_gen.h"
 #include "ompdist/queues.h"
 #include "ompdist/utils.h"
-
+#include "ompdist/msr.h"
 #include "config.h"
 
 typedef struct {
@@ -304,6 +304,8 @@ int main(int argc, char* argv[]) {
     }
 
     long long duration = 0;
+    double total_energy = 0;
+
     int verification;
 
     for (int i = 0; i < iterations; i++) {
@@ -311,6 +313,7 @@ int main(int argc, char* argv[]) {
         queuelist* invite_ql = new_queuelist(N, sizeof(invitation));
 
         begin_timer();
+        init_energy_measure();
 
         initialize_graph(g, kvals);
 
@@ -321,6 +324,7 @@ int main(int argc, char* argv[]) {
         }
         legalize_committees(g);
 
+        total_energy += total_energy_used();
         duration += time_elapsed();
 
         verification = verify_and_print_solution(g, K);
@@ -332,7 +336,7 @@ int main(int argc, char* argv[]) {
     free(kvals);
 
     if (iterate)
-        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+        printf("%.2lf %.2lf\n", ((double) duration) / iterations, total_energy / iterations);
 
     return verification;
 }
