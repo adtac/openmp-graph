@@ -6,6 +6,7 @@
 #include "ompdist/vector.h"
 #include "ompdist/graph.h"
 #include "ompdist/graph_gen.h"
+#include "ompdist/msr.h"
 
 #include "config.h"
 
@@ -147,9 +148,11 @@ int main(int argc, char* argv[]) {
     }
 
     long long duration = 0;
+    double total_energy = 0;
 
     for (int i = 0; i < iterations; i++) {
         begin_timer();
+        init_energy_measure();
 
         int p = 0;
         int nobody_was_discovered = 0;
@@ -160,13 +163,14 @@ int main(int argc, char* argv[]) {
             p++;
         }
 
+        total_energy += total_energy_used();
         duration += time_elapsed();
 
         // print_solution(g);
     }
 
     if (iterate)
-        printf("%.2lf\n", (10e9 * ((double) iterations)) / duration);
+        printf("%.2lf %.2lf\n", ((double) duration) / iterations, total_energy / iterations);
 
     return 0;
 }
